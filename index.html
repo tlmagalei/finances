@@ -11,6 +11,7 @@
   <meta name="theme-color" content="#F8F6F0">
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -187,6 +188,7 @@
               <span>Brokerage</span>
               <span class="font-bold text-[#2D2A26] mono-num" id="overviewBrokerageBalDisplay">$19,400</span>
             </div>
+<div id="extraCashLines" class="space-y-1 text-xs text-[#7A7169]"></div>
           </div>
         </div>
 
@@ -209,6 +211,7 @@
               <span>HSA</span>
               <span class="font-bold text-[#2D2A26] mono-num" id="overviewHsaBalDisplay">$300</span>
             </div>
+<div id="extraRetLines" class="space-y-1 text-xs text-[#7A7169]"></div>
           </div>
         </div>
       </div>
@@ -235,6 +238,7 @@
               <span>Home Down Payment Contribution</span>
               <span class="font-bold text-[#2D2A26] mono-num" id="subHomeContrib">$600</span>
             </div>
+<div id="extraCashConLines" class="space-y-1 text-xs text-[#7A7169]"></div>
           </div>
         </div>
 
@@ -252,13 +256,14 @@
               <span class="font-bold text-[#2D2A26] mono-num" id="subEmpContrib">$1,625</span>
             </div>
             <div class="flex justify-between">
-              <span>Employer Match</span>
+              <button onclick="event.stopPropagation();openRothContribution()">Roth IRA</button>
               <span class="font-bold text-[#2D2A26] mono-num" id="subMatchContrib">$475</span>
             </div>
             <div class="flex justify-between text-[#8C827A]">
-              <span>Annual Combined</span>
+              <button onclick="event.stopPropagation();openHsaContribution()">HSA</button>
               <span class="font-bold text-[#7A7169] mono-num" id="subAnnualCombined">$25,200 / yr</span>
             </div>
+<div id="extraRetConLines" class="space-y-1 text-xs text-[#7A7169]"></div>
           </div>
         </div>
       </div>
@@ -527,8 +532,9 @@
             <button onclick="setHistoryFilter('1Y', this)" class="hist-filter-btn px-2.5 py-1 rounded-lg bg-[#FAF8F5] text-[#7A7169] border border-[#EFE9E1] hover:bg-[#F2EFE9] font-medium">1 Year</button>
             <button onclick="setHistoryFilter('6M', this)" class="hist-filter-btn px-2.5 py-1 rounded-lg bg-[#FAF8F5] text-[#7A7169] border border-[#EFE9E1] hover:bg-[#F2EFE9] font-medium">6 Months</button>
             <button onclick="setHistoryFilter('3M', this)" class="hist-filter-btn px-2.5 py-1 rounded-lg bg-[#FAF8F5] text-[#7A7169] border border-[#EFE9E1] hover:bg-[#F2EFE9] font-medium">3 Months</button>
+            <button onclick="setHistoryFilter('Past', this)" class="hist-filter-btn px-2.5 py-1 rounded-lg bg-[#FAF8F5] text-[#7A7169] border border-[#EFE9E1] hover:bg-[#F2EFE9] font-medium">Past</button>
           </div>
-
+          <div class="flex flex-wrap gap-2"><button onclick="downloadHistoryPdf()" class="px-3 py-2 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] text-xs font-bold">Download</button><button onclick="analyzeHistory()" class="px-3 py-2 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] text-xs font-bold">Analysis</button></div><div id="historyAnalysis" class="hidden text-xs text-[#7A7169] bg-[#FAF8F5] rounded-xl p-3"></div>
           <div class="overflow-x-auto">
             <table class="w-full text-xs sm:text-sm min-w-[340px]">
               <thead>
@@ -1246,6 +1252,9 @@
           <input type="number" step="0.01" id="accBalModalInput" class="w-full pl-7 pr-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-sm font-bold text-[#2D2A26] focus:outline-none">
         </div>
       </div>
+      <div id="savingsLogExpenseAction" class="hidden">
+        <button type="button" onclick="openSavingsExpenseModal()" class="px-4 py-2 rounded-2xl bg-[#F2EFE9] border border-[#EFE9E1] hover:bg-[#EAE5DD] text-[#2D2A26] text-xs font-bold transition">Log Expense</button>
+      </div>
       <div class="pt-2 flex justify-end gap-2 border-t border-[#F4EFEA]">
         <button onclick="closeAccountBalanceModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Cancel</button>
         <button onclick="saveAccountBalance()" class="bg-[#2D2A26] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-black transition">Save</button>
@@ -1356,7 +1365,7 @@
         <div class="pt-1">
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" id="expIsPendingChk" class="rounded text-[#2D2A26] focus:ring-0">
-            <span class="text-xs text-[#7A7169] font-medium">Mark as Pending (doesn't deduct checking yet)</span>
+            <span id="expensePendingLabel" class="text-xs text-[#7A7169] font-medium">Mark as Pending (doesn't deduct checking yet)</span>
           </label>
         </div>
       </div>
@@ -2336,6 +2345,7 @@
 
       recalcLongTermProjections();
       renderAssetAllocationDonut(combinedLiquid, balanceAccounts.hysa, balanceAccounts.brokerage, balanceAccounts.k401, balanceAccounts.roth, balanceAccounts.hsa);
+      refreshExtras();
     }
 
     function renderAssetAllocationDonut(checking, hysa, brokerage, k401, roth, hsa) {
@@ -2487,16 +2497,43 @@
       if (remEl) remEl.textContent = `$${Math.max(0, totalPredicted - totalEarned).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
+    let activeHistoryRange = 'YTD';
+    function historyYear(h) { const m = String(h.month).match(/(?:20\d{2}|\d{2})$/); return m ? (m[0].length===2 ? 2000+Number(m[0]):Number(m[0])) : null; }
+    function visibleHistory() {
+      const now = new Date(), currentYear = now.getFullYear();
+      const sorted = [...historyMonths].sort((a,b)=>new Date('1 '+a.month)-new Date('1 '+b.month));
+      if(activeHistoryRange==='Past') return [...new Set(sorted.map(historyYear).filter(y=>y!==null&&y<currentYear))].map(y=>{const months=sorted.filter(h=>historyYear(h)===y);return {id:'past'+y,month:String(y),income:months.reduce((t,h)=>t+h.income,0),needs:months.reduce((t,h)=>t+h.needs,0),wants:months.reduce((t,h)=>t+h.wants,0),savings:months.reduce((t,h)=>t+h.savings,0),yearSummary:true};});
+      if(activeHistoryRange==='YTD') return sorted.filter(h=>historyYear(h)===currentYear).reverse();
+      return sorted.slice(-(activeHistoryRange==='3M'?3:activeHistoryRange==='6M'?6:12)).reverse();
+    }
+    function downloadHistoryPdf() {
+      const rows=visibleHistory(); if(!rows.length){alert('No history available for this range.');return;}
+      if(!window.jspdf){alert('PDF library is unavailable. Please check your internet connection.');return;}
+      const pdf=new window.jspdf.jsPDF();let y=20;pdf.setFontSize(16);pdf.text('Taylor Finances - History ('+activeHistoryRange+')',14,y);y+=12;pdf.setFontSize(10);
+      rows.forEach(h=>{if(y>265){pdf.addPage();y=20;}pdf.setFont(undefined,'bold');pdf.text(h.month,14,y);y+=6;pdf.setFont(undefined,'normal');['income','needs','wants','savings'].forEach(k=>{pdf.text(k+': $'+Number(h[k]).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),18,y);y+=5;});pdf.text('Total Spent: $'+(h.needs+h.wants+h.savings).toFixed(2),18,y);y+=10;});
+      pdf.save('Taylor-History-'+activeHistoryRange+'.pdf');
+    }
+    function analyzeHistory() {
+      const el=document.getElementById('historyAnalysis'), rows=visibleHistory();el.classList.remove('hidden');
+      if(!rows.length){el.textContent='No records available for analysis.';return;}
+      const chron=[...historyMonths].sort((a,b)=>new Date('1 '+a.month)-new Date('1 '+b.month));
+      const metric=h=>({Income:h.income,Needs:h.needs,Wants:h.wants,Savings:h.savings,'Total Spent':h.needs+h.wants+h.savings});
+      const pct=(a,b)=>b?((a-b)/b*100).toFixed(1)+'%':'N/A';
+      const lines=[];for(const h of rows){if(h.yearSummary){const prev=rows.find(x=>Number(x.month)===Number(h.month)-1);if(prev)lines.push(h.month+' vs '+prev.month+': '+Object.keys(metric(h)).map(k=>k+' '+pct(metric(h)[k],metric(prev)[k])).join(' · '));continue;}
+      const i=chron.findIndex(x=>x.id===h.id);if(i>0){const prev=chron[i-1];lines.push(h.month+' MoM: '+Object.keys(metric(h)).map(k=>k+' '+pct(metric(h)[k],metric(prev)[k])).join(' · '));}
+      const yearAgo=chron.find(x=>historyYear(x)===historyYear(h)-1&&x.month.slice(0,3)===h.month.slice(0,3));if(yearAgo)lines.push(h.month+' YoY: '+Object.keys(metric(h)).map(k=>k+' '+pct(metric(h)[k],metric(yearAgo)[k])).join(' · '));}
+      el.textContent=lines.join('\n')||'Not enough comparable months for MoM or YoY analysis.';el.style.whiteSpace='pre-wrap';
+    }
     function renderHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
       if (!tbody) return;
 
-      tbody.innerHTML = historyMonths.map(h => {
+      tbody.innerHTML = visibleHistory().map(h => {
         const totalSpent = h.needs + h.wants + h.savings;
         return `
           <tr class="hover:bg-[#FAF8F5] transition">
             <td class="py-2 font-medium text-[#2D2A26]">
-              <button onclick="openHistoryDetailModal('${h.id}')" class="text-left font-bold text-[#2D2A26] hover:text-[#9E4D34] transition underline decoration-dotted underline-offset-2">
+              <button onclick="${h.yearSummary ? '' : `openHistoryDetailModal('${h.id}')` }" class="text-left font-bold text-[#2D2A26] hover:text-[#9E4D34] transition underline decoration-dotted underline-offset-2">
                 ${h.month}
               </button>
             </td>
@@ -2901,6 +2938,7 @@
       if (btnElement) {
         btnElement.className = 'hist-filter-btn px-2.5 py-1 rounded-lg bg-[#2D2A26] text-white font-bold';
       }
+      activeHistoryRange=range;renderHistoryTable();document.getElementById('historyAnalysis').classList.add('hidden');
     }
 
     function openGrossIncomeModal() {
@@ -2938,6 +2976,49 @@
       closeCreditScoreModal();
     }
 
+    let addedAccounts={cash:[],ret:[]},addedContributions={cash:[],ret:[]};
+    let rothMonthly=0,hsaPaycheck=0,hsaEmployer=0,hsaEmployerMode='annual';
+    const extraMoney=n=>'$'+Math.round(n).toLocaleString('en-US');
+    function addExtra(kind,type) {const name=prompt(type==='account'?'Account name:':'Contribution type name:');if(!name||!name.trim())return;const amount=Number(prompt('Amount ($):'));if(!Number.isFinite(amount)||amount<0)return;const list=type==='account'?addedAccounts:addedContributions;list[kind].push({name:name.trim(),amount});recalcAll();window.saveState();}
+    function ensureExtraButtons(){[['cashReservesModal','cash','account'],['retirementFundModal','ret','account'],['cashContribModal','cash','contribution'],['ret401kModal','ret','contribution']].forEach(([id,k,type])=>{const modal=document.getElementById(id);if(!modal||modal.querySelector('.extra-add-button'))return;const btn=document.createElement('button');btn.className='extra-add-button px-3 py-2 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] text-xs font-bold';btn.textContent=type==='account'?'Add Account':'Add Contribution Type';btn.onclick=()=>addExtra(k,type);modal.querySelector('.space-y-4')?.appendChild(btn);});}
+    function refreshExtras(){
+      const sum=a=>a.reduce((t,x)=>t+Number(x.amount||0),0);
+      const safe=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const add=(id,arr)=>{const el=document.getElementById(id);if(el)el.innerHTML=arr.map(x=>'<div class="flex justify-between"><span>'+safe(x.name)+'</span><span class="font-bold">'+extraMoney(x.amount)+'</span></div>').join('');};
+      add('extraCashLines',addedAccounts.cash);add('extraRetLines',addedAccounts.ret);add('extraCashConLines',addedContributions.cash);add('extraRetConLines',addedContributions.ret);
+      const liquid=recalcCashFlowBalances();
+      const cash=liquid.checkingCurrent+liquid.savingsCurrent+balanceAccounts.hysa+balanceAccounts.brokerage+sum(addedAccounts.cash);
+      const ret=balanceAccounts.k401+balanceAccounts.roth+balanceAccounts.hsa+sum(addedAccounts.ret);
+      document.getElementById('overviewCashReservesDisplay').textContent=extraMoney(cash);
+      document.getElementById('overviewRetTotalDisplay').textContent=extraMoney(ret);
+      const nw=cash+ret;['headerNetWorthDisplay','overviewNetWorthDisplay','donutCenterNetWorth'].forEach(id=>document.getElementById(id).textContent=extraMoney(nw));
+      const cc=monthlyCashBuckets.emergency+monthlyCashBuckets.car+monthlyCashBuckets.home+sum(addedContributions.cash);
+      ['overviewCashContribDisplay','stMonthlyContribRef'].forEach(id=>document.getElementById(id).textContent=extraMoney(cc)+' / mo');
+      const monthlyHsa=hsaPaycheck*2+hsaEmployer/(hsaEmployerMode==='annual'?12:1);
+      const base=recalc401kContributions().monthlyTotal;
+      const total=base+rothMonthly+monthlyHsa+sum(addedContributions.ret);
+      ['overviewRetContribDisplay','ltMonthlyContribRef','ltRealityContribDisplay'].forEach(id=>document.getElementById(id).textContent=extraMoney(total)+' / mo');
+      document.getElementById('subMatchContrib').textContent=extraMoney(rothMonthly);
+      document.getElementById('subAnnualCombined').textContent=extraMoney(monthlyHsa);
+    }
+    function contributionDialog(title,fields,onSave){
+      let wrap=document.getElementById('customContributionDialog');
+      if(!wrap){wrap=document.createElement('div');wrap.id='customContributionDialog';wrap.className='fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] hidden p-4 flex items-center justify-center';document.body.appendChild(wrap)}
+      wrap.innerHTML='<div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4"><div class="flex justify-between items-center border-b border-[#F4EFEA] pb-3"><h3 class="font-bold text-base text-[#2D2A26]">'+title+'</h3><button type="button" id="customClose" class="text-[#8C827A] text-xl">×</button></div>'+fields+'<div class="flex justify-end gap-2 border-t border-[#F4EFEA] pt-3"><button id="customCancel" class="px-4 py-2 text-xs text-[#8C827A]">Cancel</button><button id="customSave" class="px-4 py-2 text-xs rounded-xl bg-[#2D2A26] text-white font-bold">Save</button></div></div>';
+      wrap.classList.remove('hidden');
+      const close=()=>wrap.classList.add('hidden');
+      wrap.querySelector('#customClose').onclick=close;wrap.querySelector('#customCancel').onclick=close;
+      wrap.querySelector('#customSave').onclick=()=>{if(onSave(wrap)!==false){close();recalcAll();window.saveState()}};
+    }
+    function openRothContribution(){
+      contributionDialog('Roth IRA','<p class="text-[11px] text-[#8C827A]">2026 IRS IRA contribution limit: $7,500 (under age 50; eligibility and income limits apply).</p><label class="block text-xs text-[#8C827A] font-semibold mt-3">Monthly Roth IRA Contribution ($)</label><input id="customRoth" type="number" min="0" step="0.01" class="w-full px-3 py-2 mt-1 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl" value="'+rothMonthly+'">',w=>{let n=Number(w.querySelector('#customRoth').value);if(!Number.isFinite(n)||n<0)return false;rothMonthly=n});
+    }
+    function openHsaContribution(){
+      contributionDialog('HSA','<p class="text-[11px] text-[#8C827A]">2026 IRS HSA contribution limits: $4,400 self-only / $8,750 family (subject to eligibility).</p><label class="block text-xs text-[#8C827A] font-semibold mt-3">Personal (Paycheck) Contribution ($)</label><input id="customPay" type="number" min="0" step="0.01" class="w-full px-3 py-2 mt-1 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl" value="'+hsaPaycheck+'"><p class="text-[11px] text-[#8C827A] mt-1">Per paycheck × 2 = monthly contribution</p><label class="block text-xs text-[#8C827A] font-semibold mt-3">Employer Contribution</label><select id="customMode" class="w-full px-3 py-2 mt-1 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl"><option value="annual">Annual Contribution</option><option value="monthly">Monthly Contribution</option></select><input id="customEmployer" type="number" min="0" step="0.01" class="w-full px-3 py-2 mt-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl" value="'+hsaEmployer+'"><p id="customHsaMonthly" class="text-xs text-[#8C827A] mt-2"></p>',w=>{let p=Number(w.querySelector('#customPay').value),e=Number(w.querySelector('#customEmployer').value);if(!Number.isFinite(p)||!Number.isFinite(e)||p<0||e<0)return false;hsaPaycheck=p;hsaEmployer=e;hsaEmployerMode=w.querySelector('#customMode').value});
+      const w=document.getElementById('customContributionDialog');w.querySelector('#customMode').value=hsaEmployerMode;
+      const update=()=>{let p=Number(w.querySelector('#customPay').value)||0,e=Number(w.querySelector('#customEmployer').value)||0;w.querySelector('#customHsaMonthly').textContent='Monthly HSA contribution: '+extraMoney(p*2+e/(w.querySelector('#customMode').value==='annual'?12:1))};
+      ['#customPay','#customEmployer','#customMode'].forEach(id=>w.querySelector(id).addEventListener('input',update));update();
+    }
     function openCashReservesModal() {
       document.getElementById('inputCashReservesHysa').value = balanceAccounts.hysa;
       document.getElementById('inputCashReservesBrokerage').value = balanceAccounts.brokerage;
@@ -3030,8 +3111,10 @@
     }
 
     let currentEditingAccount = 'checking';
+    let savingsExpenseContext = false;
     function openAccountBalanceModal(accType) {
       currentEditingAccount = accType;
+      document.getElementById('savingsLogExpenseAction').classList.toggle('hidden', accType !== 'savings');
       const titleEl = document.getElementById('accBalModalTitle');
       const labelEl = document.getElementById('accBalModalLabel');
       const inputEl = document.getElementById('accBalModalInput');
@@ -3366,9 +3449,14 @@
           name: name,
           group: group,
           spent: 0,
-          projected: 0
+          projected: 0,
+          savingsUserAdded: savingsExpenseContext
         });
         populateExpenseCategorySelect();
+        if (savingsExpenseContext) {
+          const select = document.getElementById('expCategorySelect');
+          select.innerHTML = expenseCategories.filter(c => ['HYSA','Other'].includes(c.name) || c.savingsUserAdded).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
         document.getElementById('expCategorySelect').value = slug;
         renderCategorizedExpenses();
       } else {
@@ -3399,8 +3487,23 @@
       select.innerHTML = incomeBreakdown.map(i => `<option value="${i.id}">${i.source}</option>`).join('');
     }
 
-    function openAddExpenseModal() {
+    function openSavingsExpenseModal() {
+      closeAccountBalanceModal();
+      openAddExpenseModal(true);
+    }
+    function openAddExpenseModal(fromSavings = false) {
+      savingsExpenseContext = fromSavings === true;
+      document.getElementById('expensePendingLabel').textContent = savingsExpenseContext ? "Mark as Pending (doesn't deduct savings yet)" : "Mark as Pending (doesn't deduct checking yet)";
       populateExpenseCategorySelect();
+      if (savingsExpenseContext) {
+        for (const name of ['HYSA', 'Other']) {
+          if (!expenseCategories.some(c => c.name === name)) {
+            expenseCategories.push({id: 'savings_' + name.toLowerCase(), name, group: 'Savings', spent: 0, projected: 0});
+          }
+        }
+        const expSelect = document.getElementById('expCategorySelect');
+        expSelect.innerHTML = expenseCategories.filter(c => ['HYSA','Other'].includes(c.name) || c.savingsUserAdded).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      }
       document.getElementById('expAmountInput').value = '';
       document.getElementById('expDateInput').value = '';
       document.getElementById('expNoteInput').value = '';
@@ -3427,6 +3530,7 @@
           isPending: isPending
         };
         lineItems.push(newItem);
+        const chosen=expenseCategories.find(c=>c.id===catId);if(savingsExpenseContext&&chosen&&chosen.name==='HYSA'&&!isPending)balanceAccounts.hysa+=amount;
 
         if (!isPending) {
           const cat = expenseCategories.find(c => c.id === catId);
@@ -3700,7 +3804,7 @@
         ret401kSettings,
         monthlyCashBuckets,
         goalTargets,
-        oneTimeContribution
+        oneTimeContribution,addedAccounts,addedContributions,rothMonthly,hsaPaycheck,hsaEmployer,hsaEmployerMode
       };
     }
 
@@ -3743,6 +3847,8 @@
       if (data.monthlyCashBuckets) monthlyCashBuckets = Object.assign(monthlyCashBuckets, data.monthlyCashBuckets);
       if (data.goalTargets) goalTargets = Object.assign(goalTargets, data.goalTargets);
       if (data.oneTimeContribution) oneTimeContribution = Object.assign(oneTimeContribution, data.oneTimeContribution);
+      if(data.addedAccounts)addedAccounts=data.addedAccounts;if(data.addedContributions)addedContributions=data.addedContributions;
+      if(typeof data.rothMonthly==='number')rothMonthly=data.rothMonthly;if(typeof data.hsaPaycheck==='number')hsaPaycheck=data.hsaPaycheck;if(typeof data.hsaEmployer==='number')hsaEmployer=data.hsaEmployer;if(data.hsaEmployerMode)hsaEmployerMode=data.hsaEmployerMode;
     }
 
     function triggerSaveBadge() {
@@ -3860,6 +3966,7 @@
       } catch (e) {}
 
       applyMonthTitleUI();
+      ensureExtraButtons();
       renderCategorizedExpenses();
       renderIncomeTable();
       renderHistoryTable();
