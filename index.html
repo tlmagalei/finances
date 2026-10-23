@@ -122,7 +122,7 @@
           <button onclick="loadFromGoogleSheet()" class="flex-1 sm:flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Sync</button>
           <button onclick="openChangePinModal()" class="flex-1 sm:flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition whitespace-nowrap">Change PIN</button>
           <button onclick="openSheetConfigModal()" class="flex-1 sm:flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition flex items-center justify-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1.5 3 3.5 3h9c2 0 3.5-1 3.5-3V7c0-2-1.5-3-3.5-3h-9C5.5 4 4 5 4 7z"></path></svg>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5v7c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 12v7c0 1.66 3.58 3 8 3s8-1.34 8-3v-7"></path></svg>
             <span>Database</span>
           </button>
           <button onclick="lockApp()" class="flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition" title="Lock App">🔒</button>
@@ -332,13 +332,13 @@
         </div>
 
         <div class="flex items-center gap-2.5 flex-1 sm:justify-end">
-          <button onclick="openTransferModal()" class="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
+          <button onclick="openTransferModal()" class="flex-1 min-w-0 text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
             Transfer
           </button>
-          <button onclick="openPlanNextMonthModal()" class="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
+          <button onclick="openPlanNextMonthModal()" class="flex-1 min-w-0 text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
             Plan Next Month
           </button>
-          <button onclick="openStartNewMonthModal()" class="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
+          <button onclick="openStartNewMonthModal()" class="flex-1 min-w-0 text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
             Start New Month
           </button>
         </div>
@@ -683,7 +683,7 @@
 
           <div class="bg-[#FAF8F5] border border-[#EFE9E1] px-4 py-2.5 rounded-2xl flex items-center justify-between sm:justify-start gap-4">
             <span class="text-[11px] font-extrabold uppercase tracking-wider text-[#8C827A]">Monthly Retirement Contribution</span>
-            <span class="text-base font-black text-[#2D2A26] mono-num" id="ltMonthlyContribRef">$2,100 / mo</span>
+            <span class="font-black text-[#2D2A26] mono-num text-[11px] sm:text-xs whitespace-nowrap" id="ltMonthlyContribRef">$2,100 / mo</span>
           </div>
         </div>
 
@@ -699,27 +699,27 @@
             <div class="space-y-2 text-xs text-[#7A7169]">
               <div class="flex justify-between items-center">
                 <span>Dream Home Target Price</span>
-                <button onclick="openHomeDownPaymentCalcModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted" id="ltDreamHomePriceDisplay">$2,500,000</button>
+                <button onclick="openHomeDownPaymentCalcModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted text-[11px] sm:text-xs whitespace-nowrap" id="ltDreamHomePriceDisplay">$2,500,000</button>
               </div>
               <div class="flex justify-between items-center">
                 <span>Est. Monthly Mortgage Payment</span>
-                <span class="font-bold text-[#2D2A26] mono-num" id="ltDreamMortgageDisplay">$12,641 / mo</span>
+                <span class="font-bold text-[#2D2A26] mono-num text-[11px] sm:text-xs whitespace-nowrap" id="ltDreamMortgageDisplay">$12,641 / mo</span>
               </div>
               <div class="flex justify-between items-center">
                 <span>Target Monthly Net Income <span class="text-[10px] text-[#8C827A]">(28% housing rule)</span></span>
-                <span class="font-bold text-[#2D2A26] mono-num" id="ltTargetMonthlyNetDisplay">$45,146 / mo</span>
+                <span class="font-bold text-[#2D2A26] mono-num text-[11px] sm:text-xs whitespace-nowrap" id="ltTargetMonthlyNetDisplay">$45,146 / mo</span>
               </div>
               <div class="flex justify-between items-center">
                 <span>Annual Gross</span>
-                <button onclick="openTaxAssumptionsModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted" id="ltAnnualGrossRevDisplay">$746,220 / yr</button>
+                <button onclick="openTaxAssumptionsModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted text-[11px] sm:text-xs whitespace-nowrap" id="ltAnnualGrossRevDisplay">$746,220 / yr</button>
               </div>
               <div class="flex justify-between items-center border-t border-[#EFE9E1] pt-2">
                 <span>Nest Egg</span>
-                <button onclick="openNestEggAssumptionsModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted" id="ltNestEggRevDisplay">$13,543,929</button>
+                <button onclick="openNestEggAssumptionsModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted text-[11px] sm:text-xs whitespace-nowrap" id="ltNestEggRevDisplay">$13,543,929</button>
               </div>
               <div class="flex justify-between items-center border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
                 <span>Required Monthly Investment</span>
-                <button onclick="openInvestmentBreakdownModal()" class="mono-num text-[#9E4D34] hover:underline" id="ltReqMonthlyInvDisplay">$11,108 / mo ⓘ</button>
+                <button onclick="openInvestmentBreakdownModal()" class="mono-num text-[#9E4D34] hover:underline text-[11px] sm:text-xs whitespace-nowrap" id="ltReqMonthlyInvDisplay">$11,108 / mo ⓘ</button>
               </div>
             </div>
           </div>
@@ -733,7 +733,7 @@
             <div class="space-y-2 text-xs text-[#7A7169]">
               <div class="flex justify-between">
                 <span>Current Monthly Retirement Contribution</span>
-                <span class="font-bold text-[#2D2A26] mono-num" id="ltRealityContribDisplay">$2,100 / mo</span>
+                <span class="font-bold text-[#2D2A26] mono-num text-[11px] sm:text-xs whitespace-nowrap" id="ltRealityContribDisplay">$2,100 / mo</span>
               </div>
               <div class="flex justify-between">
                 <span>Expected Annual Growth</span>
@@ -741,19 +741,19 @@
               </div>
               <div class="flex justify-between">
                 <span>Projected Nest Egg</span>
-                <button onclick="openEditTargetAgeModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted cursor-pointer" id="ltTrajNestEggDisplay">$2,534,810</button>
+                <button onclick="openEditTargetAgeModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted cursor-pointer text-[11px] sm:text-xs whitespace-nowrap" id="ltTrajNestEggDisplay">$2,534,810</button>
               </div>
               <div class="flex justify-between border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
                 <span>Projected Monthly Retirement Income</span>
-                <span class="mono-num text-[#2D6A4F]" id="ltTrajMonthlyIncomeDisplay">$8,450 / mo</span>
+                <span class="mono-num text-[#2D6A4F] text-[11px] sm:text-xs whitespace-nowrap" id="ltTrajMonthlyIncomeDisplay">$8,450 / mo</span>
               </div>
               <div class="flex justify-between items-center">
                 <span>Affordable Monthly Mortgage</span>
-                <button onclick="openHousingRuleModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted cursor-pointer" id="ltAffordableMortgageDisplay">$2,366 / mo</button>
+                <button onclick="openHousingRuleModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted cursor-pointer text-[11px] sm:text-xs whitespace-nowrap" id="ltAffordableMortgageDisplay">$2,366 / mo</button>
               </div>
               <div class="flex justify-between items-center border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
                 <span>Affordable House Price</span>
-                <span class="mono-num text-[#1D4ED8] text-sm sm:text-base" id="ltAffordableHouseDisplay">$467,900</span>
+                <span class="mono-num text-[#1D4ED8] sm:text-base text-[11px] sm:text-xs whitespace-nowrap" id="ltAffordableHouseDisplay">$467,900</span>
               </div>
             </div>
           </div>
