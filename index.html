@@ -365,6 +365,7 @@
             <span>Income</span>
             <span class="font-bold text-[#2D2A26] mono-num" id="savingsEarnedTotal">$2,993.43</span>
           </div>
+          <div id="savingsExpenseList" class="space-y-1.5 text-xs border-t border-[#FAF5EF] pt-2" onclick="event.stopPropagation()"></div>
         </div>
       </div>
 
@@ -2084,12 +2085,14 @@
         .filter(item => !item.isPending && !item.doNotMoveToSavings)
         .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
+      const settledSavingsSpent = lineItems.filter(item => item.fromSavings && !item.isPending)
+        .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
       const settledSpent = lineItems
-        .filter(item => !item.isPending)
+        .filter(item => !item.isPending && !item.fromSavings)
         .reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
       const checkingCurrent = Math.max(0, accountBalances.checkingStart - settledSpent);
-      const savingsCurrent = accountBalances.savingsStart + settledIncomeToSavings;
+      const savingsCurrent = accountBalances.savingsStart + settledIncomeToSavings - settledSavingsSpent;
 
       const checkingEl = document.getElementById('checkingCurrentBalance');
       const savingsEl = document.getElementById('savingsCurrentBalance');
@@ -2100,6 +2103,7 @@
       if (savingsEl) savingsEl.textContent = `$${savingsCurrent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       if (spentSummaryEl) spentSummaryEl.textContent = `$${settledSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       if (earnedSummaryEl) earnedSummaryEl.textContent = `$${settledIncomeTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      renderSavingsExpenseList();
 
       return { checkingCurrent, savingsCurrent, settledIncome: settledIncomeTotal, settledSpent };
     }
@@ -3112,6 +3116,41 @@
 
     let currentEditingAccount = 'checking';
     let savingsExpenseContext = false;
+    function escapeSavingsText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+    function renderSavingsExpenseList() {
+      const container = document.getElementById('savingsExpenseList');
+      if (!container) return;
+      const items = lineItems.filter(item => item.fromSavings);
+      container.innerHTML = items.length ? '<div class="font-bold text-[#8C827A] uppercase tracking-wider">Expenses</div>' + items.map(item => {
+        const cat = expenseCategories.find(c => c.id === item.categoryId);
+        return `<button type="button" onclick="openSavingsTransactionEditor(${JSON.stringify(item.id)})" class="w-full flex items-center justify-between gap-2 text-left hover:text-[#9E4D34] transition py-1">
+          <span class="min-w-0 truncate">${escapeSavingsText(item.note || (cat && cat.name) || 'Expense')}${item.isPending ? ' (Pending)' : ''}</span>
+          <span class="mono-num font-bold whitespace-nowrap">$${Number(item.amount).toFixed(2)}</span>
+        </button>`;
+      }).join('') : '<div class="text-[#8C827A]">No savings expenses logged</div>';
+    }
+    function openSavingsTransactionEditor(id) {
+      activeLedgerType = 'expense';
+      const item = lineItems.find(li => li.id === id && li.fromSavings);
+      if (!item) return;
+      activeEditingTxId = id;
+      document.getElementById('editTxTitleInput').value = item.note || '';
+      document.getElementById('editTxAmountInput').value = item.amount;
+      document.getElementById('editTxDateInput').value = item.date || '';
+      document.getElementById('editTransactionModal').classList.remove('hidden');
+    }
+    function deleteSavingsTransaction() {
+      const item = lineItems.find(li => li.id === activeEditingTxId && li.fromSavings);
+      if (!item || !confirm('Remove this savings expense?')) return;
+      if (!item.isPending && expenseCategories.find(c => c.id === item.categoryId)?.name === 'HYSA') balanceAccounts.hysa -= item.amount;
+      lineItems = lineItems.filter(li => li.id !== item.id);
+      const cat = expenseCategories.find(c => c.id === item.categoryId);
+      if (cat) cat.spent = lineItems.filter(li => li.categoryId === cat.id && !li.isPending).reduce((sum, li) => sum + li.amount, 0);
+      closeEditTransactionModal();
+      renderCategorizedExpenses(); recalcAll(); window.saveState();
+    }
     function openAccountBalanceModal(accType) {
       currentEditingAccount = accType;
       document.getElementById('savingsLogExpenseAction').classList.toggle('hidden', accType !== 'savings');
@@ -3386,9 +3425,11 @@
       const item = isExp ? lineItems.find(li => li.id === activeEditingTxId) : incomeLineItems.find(li => li.id === activeEditingTxId);
       if (!item) return;
 
+      const previousSavingsHysa = isExp && item.fromSavings && !item.isPending && expenseCategories.find(c => c.id === item.categoryId)?.name === 'HYSA' ? item.amount : 0;
       item.note = document.getElementById('editTxTitleInput').value.trim();
       item.amount = parseFloat(document.getElementById('editTxAmountInput').value) || 0;
       item.date = document.getElementById('editTxDateInput').value || '';
+      if (previousSavingsHysa) balanceAccounts.hysa += item.amount - previousSavingsHysa;
 
       if (isExp) {
         const cat = expenseCategories.find(c => c.id === item.categoryId);
@@ -3408,13 +3449,14 @@
         renderIncomeTable();
       }
 
-      renderLineItemRows();
+      if (!item.fromSavings) renderLineItemRows();
       recalcAll();
       window.saveState();
       closeEditTransactionModal();
     }
     function deleteCurrentTxItem() {
       if (activeEditingTxId) {
+        if (lineItems.some(li => li.id === activeEditingTxId && li.fromSavings)) { deleteSavingsTransaction(); return; }
         removeLineItem(activeEditingTxId);
         closeEditTransactionModal();
       }
@@ -3527,12 +3569,13 @@
           note: note,
           date: date,
           amount: amount,
-          isPending: isPending
+          isPending: isPending,
+          fromSavings: savingsExpenseContext
         };
         lineItems.push(newItem);
         const chosen=expenseCategories.find(c=>c.id===catId);if(savingsExpenseContext&&chosen&&chosen.name==='HYSA'&&!isPending)balanceAccounts.hysa+=amount;
 
-        if (!isPending) {
+        if (!isPending && !savingsExpenseContext) {
           const cat = expenseCategories.find(c => c.id === catId);
           if (cat) {
             cat.spent = lineItems
