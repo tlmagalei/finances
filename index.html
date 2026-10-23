@@ -99,30 +99,30 @@
   <div class="max-w-5xl mx-auto space-y-6">
 
     <!-- TOP HEADER MODULE -->
-    <header class="bg-white border border-[#EFE9E1] rounded-3xl p-5 sm:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
+    <header class="bg-white border border-[#EFE9E1] rounded-3xl p-4 sm:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
       
-      <!-- Subtle top meta row -->
-      <div class="flex flex-wrap items-center justify-between text-xs text-[#A29990] border-b border-[#FAF5EF] pb-3 gap-2">
-        <button onclick="openSheetConfigModal()" class="flex items-center gap-2 hover:opacity-80 transition cursor-pointer text-left">
-          <span id="cloudStatusDot" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <span>Date Updated: <span class="font-medium text-[#7A7169]">Oct 23, 2026</span></span>
-          <span id="cloudStatusBadge" class="inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full ml-1">
+      <!-- Top meta row with responsive wrapping and anchored buttons -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-[#A29990] border-b border-[#FAF5EF] pb-3 gap-3">
+        <button onclick="openSheetConfigModal()" class="flex items-center gap-2 hover:opacity-80 transition cursor-pointer text-left self-start sm:self-auto">
+          <span id="cloudStatusDot" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+          <span class="truncate">Date Updated: <span class="font-medium text-[#7A7169]">Oct 23, 2026</span></span>
+          <span id="cloudStatusBadge" class="inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 rounded-full ml-1 flex-shrink-0">
             <span id="cloudStatusText">Live Synced</span>
           </span>
         </button>
         
-        <div class="flex items-center gap-2">
-          <span id="saveBadge" class="font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full transition-opacity duration-300 opacity-0 flex items-center gap-1">
+        <div class="flex items-center justify-center sm:justify-end gap-1.5 w-full sm:w-auto flex-wrap">
+          <span id="saveBadge" class="font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-1 rounded-xl transition-opacity duration-300 opacity-0 hidden sm:flex items-center gap-1 text-[11px]">
             <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            Saved to Sheet
+            Saved
           </span>
-          <button onclick="loadFromGoogleSheet()" class="min-w-[90px] text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Sync</button>
-          <button onclick="openChangePinModal()" class="min-w-[90px] text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Change PIN</button>
-          <button onclick="openSheetConfigModal()" class="text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-            <span>Google Sheet</span>
+          <button onclick="loadFromGoogleSheet()" class="flex-1 sm:flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Sync</button>
+          <button onclick="openChangePinModal()" class="flex-1 sm:flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition whitespace-nowrap">Change PIN</button>
+          <button onclick="openSheetConfigModal()" class="flex-1 sm:flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition flex items-center justify-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1.5 3 3.5 3h9c2 0 3.5-1 3.5-3V7c0-2-1.5-3-3.5-3h-9C5.5 4 4 5 4 7z"></path></svg>
+            <span>Database</span>
           </button>
-          <button onclick="lockApp()" class="text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition" title="Lock App">🔒</button>
+          <button onclick="lockApp()" class="flex-none text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-3 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition" title="Lock App">🔒</button>
         </div>
       </div>
 
@@ -317,11 +317,21 @@
 
     <!-- TAB 2: MONTHLY SPENDING -->
     <section id="tabContent-spending" class="space-y-6 hidden">
-      <div class="flex justify-end">
-        <button onclick="openStartNewMonthModal()" class="px-4 py-2 rounded-2xl bg-[#2D2A26] hover:bg-black text-[#FAF8F5] text-xs font-bold transition flex items-center gap-2 shadow-sm">
-          <span>📅</span>
-          <span>Start New Month</span>
-        </button>
+      <!-- Top Actions Bar: Evenly spaced with white background for both Plan & Start buttons -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#F4EFEA] border border-[#EAE3D9] text-xs font-bold text-[#7A7169]">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>Current Active Month: <span class="text-[#2D2A26]" id="activeMonthBadgeText">October 2026</span></span>
+        </div>
+
+        <div class="flex items-center gap-2.5 flex-1 sm:justify-end">
+          <button onclick="openPlanNextMonthModal()" class="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
+            Plan Next Month
+          </button>
+          <button onclick="openStartNewMonthModal()" class="flex-1 sm:flex-initial text-center px-5 py-2.5 rounded-2xl bg-white border border-[#EFE9E1] hover:bg-[#FAF8F5] text-[#2D2A26] text-xs font-bold transition shadow-sm">
+            Start New Month
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -331,7 +341,7 @@
           </div>
           <div class="text-3xl font-black text-[#2D2A26] mono-num" id="checkingCurrentBalance">$777.91</div>
           <div class="flex justify-between items-center text-xs text-[#7A7169] border-t border-[#FAF5EF] pt-2">
-            <span>Spent</span>
+            <span>Expenses</span>
             <span class="font-bold text-[#2D2A26] mono-num" id="checkingSpentTotal">$5,222.09</span>
           </div>
         </div>
@@ -351,7 +361,9 @@
       <div class="bg-white border border-[#EFE9E1] rounded-3xl p-5 sm:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#FAF5EF] pb-4">
           <div>
-            <h2 class="text-lg font-bold text-[#2D2A26]">Monthly Expenses</h2>
+            <h2 class="text-lg font-bold text-[#2D2A26]">
+              <button onclick="openEditMonthTitleModal()" class="hover:text-[#9E4D34] transition underline decoration-dotted underline-offset-4 cursor-pointer" id="expensesHeaderMonthBtn">Monthly</button> Expenses
+            </h2>
           </div>
           <button onclick="openAddExpenseModal()" class="px-4 py-2 rounded-2xl bg-[#F2EFE9] border border-[#EFE9E1] hover:bg-[#EAE5DD] text-[#2D2A26] text-xs font-bold transition flex items-center justify-center gap-1.5 self-start sm:self-auto">
             Log Expense
@@ -457,7 +469,9 @@
       <div class="bg-white border border-[#EFE9E1] rounded-3xl p-5 sm:p-7 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
         <div class="flex items-center justify-between border-b border-[#FAF5EF] pb-4">
           <div>
-            <h2 class="text-lg font-bold text-[#2D2A26]">Income</h2>
+            <h2 class="text-lg font-bold text-[#2D2A26]">
+              <span id="incomeHeaderMonthPrefix"></span>Income
+            </h2>
           </div>
           <button onclick="openAddIncomeModal()" class="px-4 py-2 rounded-2xl bg-[#F2EFE9] border border-[#EFE9E1] hover:bg-[#EAE5DD] text-[#2D2A26] text-xs font-bold transition">
             Log Income
@@ -738,6 +752,65 @@
 
   </div>
 
+  <!-- MODAL: EDIT MONTH TITLE -->
+  <div id="editMonthTitleModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
+        <div>
+          <h3 class="font-bold text-base text-[#2D2A26]">Set Active Month</h3>
+          <p class="text-xs text-[#8C827A] mt-0.5">Customize current spending &amp; income title</p>
+        </div>
+        <button onclick="closeEditMonthTitleModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
+      </div>
+      <div class="space-y-2 text-xs">
+        <label class="block font-semibold text-[#8C827A]">Month Name (or "Monthly")</label>
+        <input type="text" id="monthTitleInput" placeholder="e.g. October, November" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-sm font-bold text-[#2D2A26] focus:outline-none">
+      </div>
+      <div class="pt-2 flex justify-end gap-2 border-t border-[#F4EFEA]">
+        <button onclick="closeEditMonthTitleModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Cancel</button>
+        <button onclick="saveMonthTitle()" class="bg-[#2D2A26] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-black transition">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PLAN NEXT MONTH -->
+  <div id="planNextMonthModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-md shadow-xl space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
+        <div>
+          <h3 class="font-bold text-base text-[#2D2A26]" id="planNextModalTitle">Plan Next Month Expenses</h3>
+          <p class="text-xs text-[#8C827A] mt-0.5">Draft budgets ahead of time without affecting this month</p>
+        </div>
+        <button onclick="closePlanNextMonthModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-3 overflow-y-auto flex-1 pr-1 text-xs">
+        <div class="p-3 bg-[#FAF8F5] border border-[#EFE9E1] rounded-2xl flex justify-between items-center">
+          <div>
+            <span class="text-[#8C827A] text-[10px] uppercase font-extrabold tracking-wider">Planning Ahead For</span>
+            <div class="text-sm font-extrabold text-[#2D2A26]" id="planTargetMonthDisplay">November 2026</div>
+          </div>
+          <div class="text-right">
+            <span class="text-[#8C827A] text-[10px] uppercase font-extrabold tracking-wider">Projected Total</span>
+            <div class="text-sm font-black text-[#2D2A26] mono-num" id="planProjectedTotal">$0.00</div>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="text-[11px] font-extrabold uppercase tracking-wider text-[#8C827A] border-b border-[#FAF5EF] pb-1">Planned Category Targets</div>
+          <div id="planNextCatList" class="space-y-1.5"></div>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-between items-center border-t border-[#F4EFEA]">
+        <button onclick="applyPlannedMonthTargets()" class="bg-[#2D6A4F] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#1B4332] transition shadow-sm">
+          Save Planned Targets
+        </button>
+        <button onclick="closePlanNextMonthModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: HISTORICAL MONTH DETAIL & PDF EXPORT -->
   <div id="historyDetailModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-lg shadow-xl space-y-4 max-h-[90vh] flex flex-col">
@@ -870,8 +943,8 @@
     <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-md shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
         <div>
-          <h3 class="font-bold text-base text-[#2D2A26]">Google Sheet Connection</h3>
-          <p class="text-xs text-[#8C827A] mt-0.5">Saves all your finances to your private Google Sheet</p>
+          <h3 class="font-bold text-base text-[#2D2A26]">Database Connection</h3>
+          <p class="text-xs text-[#8C827A] mt-0.5">Saves all your finances to your private Google Sheet database</p>
         </div>
         <button onclick="closeSheetConfigModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
       </div>
@@ -1588,6 +1661,8 @@
     let dreamDownPaymentPct = 20;
     let housingRulePct = 28;
 
+    let activeMonthTitle = "Monthly";
+
     let taxAssumptions = {
       filingStatus: 'single',
       state: 'CA',
@@ -1621,6 +1696,8 @@
       { id: 'nyc_trip', name: "NYC Trip + Parent's Trip", group: 'Wants', spent: 301.49, projected: 301.49 },
       { id: 'emergency_fund', name: 'Emergency Fund', group: 'Savings', spent: 411.59, projected: 411.59 }
     ];
+
+    let plannedNextMonthBudgets = {};
 
     let incomeBreakdown = [
       { id: 'salary', source: 'Salary', earned: 2993.43, predicted: 6029.00 },
@@ -1805,6 +1882,98 @@
           }
         }
       });
+    }
+
+    /* EDIT MONTH TITLE WORKFLOW */
+    function openEditMonthTitleModal() {
+      const input = document.getElementById('monthTitleInput');
+      if (input) input.value = activeMonthTitle === 'Monthly' ? '' : activeMonthTitle;
+      document.getElementById('editMonthTitleModal').classList.remove('hidden');
+    }
+    function closeEditMonthTitleModal() {
+      document.getElementById('editMonthTitleModal').classList.add('hidden');
+    }
+    function saveMonthTitle() {
+      const val = document.getElementById('monthTitleInput').value.trim();
+      activeMonthTitle = val || "Monthly";
+      applyMonthTitleUI();
+      window.saveState();
+      closeEditMonthTitleModal();
+    }
+    function applyMonthTitleUI() {
+      const expBtn = document.getElementById('expensesHeaderMonthBtn');
+      const incPrefix = document.getElementById('incomeHeaderMonthPrefix');
+      const activeBadge = document.getElementById('activeMonthBadgeText');
+
+      if (expBtn) expBtn.textContent = activeMonthTitle;
+      if (incPrefix) {
+        if (activeMonthTitle && activeMonthTitle.toLowerCase() !== 'monthly') {
+          incPrefix.textContent = `${activeMonthTitle} `;
+        } else {
+          incPrefix.textContent = "";
+        }
+      }
+      if (activeBadge) {
+        activeBadge.textContent = activeMonthTitle !== 'Monthly' ? `${activeMonthTitle} 2026` : 'October 2026';
+      }
+    }
+
+    /* PLAN NEXT MONTH WORKFLOW */
+    function openPlanNextMonthModal() {
+      const now = new Date();
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const nextMonthName = monthNames[(now.getMonth() + 1) % 12];
+      const nextYear = (now.getMonth() === 11) ? now.getFullYear() + 1 : now.getFullYear();
+      
+      const targetDisplay = document.getElementById('planTargetMonthDisplay');
+      if (targetDisplay) targetDisplay.textContent = `${nextMonthName} ${nextYear}`;
+
+      const listContainer = document.getElementById('planNextCatList');
+      if (!listContainer) return;
+
+      listContainer.innerHTML = expenseCategories.map(cat => {
+        const currentPlanned = plannedNextMonthBudgets[cat.id] !== undefined ? plannedNextMonthBudgets[cat.id] : cat.projected;
+        return `
+          <div class="flex items-center justify-between p-2.5 bg-white border border-[#EFE9E1] rounded-xl hover:border-[#D6CEC5] transition">
+            <div>
+              <div class="font-bold text-[#2D2A26]">${cat.name}</div>
+              <div class="text-[10px] text-[#8C827A]">${cat.group} • Current Projected: $${cat.projected.toFixed(2)}</div>
+            </div>
+            <div class="relative w-28">
+              <span class="absolute left-2.5 top-2 text-[#8C827A] font-bold text-xs">$</span>
+              <input type="number" step="0.01" data-catid="${cat.id}" value="${currentPlanned}" class="plan-budget-input w-full pl-6 pr-2 py-1.5 bg-[#FAF8F5] border border-[#EFE9E1] rounded-lg text-xs font-bold text-[#2D2A26] text-right focus:outline-none" oninput="recalcPlanTotals()">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      recalcPlanTotals();
+      document.getElementById('planNextMonthModal').classList.remove('hidden');
+    }
+
+    function recalcPlanTotals() {
+      const inputs = document.querySelectorAll('.plan-budget-input');
+      let total = 0;
+      inputs.forEach(inp => {
+        total += parseFloat(inp.value) || 0;
+      });
+      const disp = document.getElementById('planProjectedTotal');
+      if (disp) disp.textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function closePlanNextMonthModal() {
+      document.getElementById('planNextMonthModal').classList.add('hidden');
+    }
+
+    function applyPlannedMonthTargets() {
+      const inputs = document.querySelectorAll('.plan-budget-input');
+      inputs.forEach(inp => {
+        const catId = inp.getAttribute('data-catid');
+        const val = parseFloat(inp.value) || 0;
+        plannedNextMonthBudgets[catId] = val;
+      });
+      window.saveState();
+      closePlanNextMonthModal();
     }
 
     function recalcCashFlowBalances() {
@@ -2288,7 +2457,6 @@
       netEl.textContent = `$${net.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       netEl.className = net >= 0 ? 'font-black text-[#2D6A4F] mono-num mt-0.5' : 'font-black text-rose-600 mono-num mt-0.5';
 
-      // Render Income Breakdown with Drill-down Line Items
       const incomeListEl = document.getElementById('histDetailIncomeList');
       const archivedIncomeLines = h.incomeLineItems || [];
       if (h.incomeCategories && Array.isArray(h.incomeCategories) && h.incomeCategories.length > 0) {
@@ -2328,7 +2496,6 @@
         `;
       }
 
-      // Render Expense Breakdown with Drill-down Line Items
       const expenseListEl = document.getElementById('histDetailExpenseList');
       const archivedExpenseLines = h.lineItems || [];
       if (h.expenseCategories && Array.isArray(h.expenseCategories) && h.expenseCategories.length > 0) {
@@ -2399,7 +2566,6 @@
       const archivedExpLines = h.lineItems || [];
       const archivedIncLines = h.incomeLineItems || [];
 
-      // Build Income Sources & Line Items Table for PDF
       let incHtml = '';
       if (h.incomeCategories && h.incomeCategories.length > 0) {
         incHtml = h.incomeCategories.map(inc => {
@@ -2430,7 +2596,6 @@
         `;
       }
 
-      // Build Expenses & Line Items Table for PDF
       let expHtml = '';
       if (h.expenseCategories && h.expenseCategories.length > 0) {
         expHtml = h.expenseCategories.map(cat => {
@@ -2596,12 +2761,24 @@
 
       lineItems = [];
       incomeLineItems = [];
-      expenseCategories.forEach(c => c.spent = 0);
+      expenseCategories.forEach(c => {
+        c.spent = 0;
+        if (plannedNextMonthBudgets[c.id] !== undefined) {
+          c.projected = plannedNextMonthBudgets[c.id];
+        }
+      });
       incomeBreakdown.forEach(i => i.earned = 0);
+      plannedNextMonthBudgets = {};
 
       const flow = recalcCashFlowBalances();
       accountBalances.checkingStart = flow.checkingCurrent;
       accountBalances.savingsStart = flow.savingsCurrent;
+
+      const fullMonths = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', May: 'May', Jun: 'June', Jul: 'July', Aug: 'August', Sep: 'September', Oct: 'October', Nov: 'November', Dec: 'December' };
+      const nextMonthIdx = (new Date().getMonth() + 1) % 12;
+      const monthKeys = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      activeMonthTitle = fullMonths[monthKeys[nextMonthIdx]] || "Monthly";
+      applyMonthTitleUI();
 
       renderCategorizedExpenses();
       renderIncomeTable();
@@ -3411,6 +3588,8 @@
         dreamHomePrice,
         dreamDownPaymentPct,
         housingRulePct,
+        activeMonthTitle,
+        plannedNextMonthBudgets,
         taxAssumptions,
         nestEggAssumptions,
         balanceAccounts,
@@ -3448,6 +3627,11 @@
       if (typeof data.dreamHomePrice === 'number') dreamHomePrice = data.dreamHomePrice;
       if (typeof data.dreamDownPaymentPct === 'number') dreamDownPaymentPct = data.dreamDownPaymentPct;
       if (typeof data.housingRulePct === 'number') housingRulePct = data.housingRulePct;
+      if (data.activeMonthTitle) {
+        activeMonthTitle = data.activeMonthTitle;
+        applyMonthTitleUI();
+      }
+      if (data.plannedNextMonthBudgets) plannedNextMonthBudgets = data.plannedNextMonthBudgets;
       if (data.taxAssumptions) taxAssumptions = Object.assign(taxAssumptions, data.taxAssumptions);
       if (data.nestEggAssumptions) nestEggAssumptions = Object.assign(nestEggAssumptions, data.nestEggAssumptions);
       if (data.balanceAccounts) balanceAccounts = Object.assign(balanceAccounts, data.balanceAccounts);
@@ -3483,106 +3667,4 @@
       }
       if (badge) {
         badge.className = isSuccess
-          ? "inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full ml-1"
-          : "inline-flex items-center gap-1 font-semibold text-[#7A7169] bg-[#FAF8F5] border border-[#EFE9E1] px-2.5 py-1 rounded-full ml-1";
-      }
-    }
-
-    function openSheetConfigModal() {
-      const input = document.getElementById('sheetUrlInput');
-      if (input) input.value = GOOGLE_SHEET_WEBAPP_URL;
-      document.getElementById('sheetConfigModal').classList.remove('hidden');
-    }
-    function closeSheetConfigModal() {
-      document.getElementById('sheetConfigModal').classList.add('hidden');
-    }
-    function saveSheetUrl() {
-      const input = document.getElementById('sheetUrlInput');
-      if (!input) return;
-      const url = input.value.trim();
-      GOOGLE_SHEET_WEBAPP_URL = url;
-      localStorage.setItem('tm_sheet_url', url);
-      closeSheetConfigModal();
-      if (url) loadFromGoogleSheet();
-    }
-
-    async function loadFromGoogleSheet() {
-      if (!GOOGLE_SHEET_WEBAPP_URL) {
-        setSheetStatus("Sheet Not Connected", false);
-        return;
-      }
-
-      try {
-        setSheetStatus("Syncing...", false);
-        const response = await fetch(GOOGLE_SHEET_WEBAPP_URL + (GOOGLE_SHEET_WEBAPP_URL.includes('?') ? '&' : '?') + 't=' + Date.now(), {
-          method: 'GET',
-          cache: 'no-store'
-        });
-
-        const text = await response.text();
-        if (text && text.trim().startsWith('{')) {
-          const data = JSON.parse(text);
-          if (data && Object.keys(data).length > 0) {
-            applyLoadedState(data);
-            localStorage.setItem('tm_local_backup', JSON.stringify(collectCurrentState()));
-            renderCategorizedExpenses();
-            renderIncomeTable();
-            renderHistoryTable();
-            recalcAll();
-          }
-        } else {
-          sendToGoogleSheet(collectCurrentState());
-        }
-        setSheetStatus("Live Synced", true);
-      } catch (err) {
-        console.warn("Sheet fetch notice:", err);
-        setSheetStatus("Live Synced", true);
-      }
-    }
-
-    async function sendToGoogleSheet(payload) {
-      if (!GOOGLE_SHEET_WEBAPP_URL) return;
-
-      try {
-        await fetch(GOOGLE_SHEET_WEBAPP_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        setSheetStatus("Live Synced", true);
-      } catch (err) {
-        console.warn("Sheet post notice:", err);
-      }
-    }
-
-    let sheetSaveTimeout = null;
-    window.saveState = function() {
-      triggerSaveBadge();
-      const payload = collectCurrentState();
-      
-      try {
-        localStorage.setItem('tm_local_backup', JSON.stringify(payload));
-      } catch(e) {}
-
-      clearTimeout(sheetSaveTimeout);
-      sheetSaveTimeout = setTimeout(() => {
-        sendToGoogleSheet(payload);
-      }, 350);
-    };
-
-    window.addEventListener('DOMContentLoaded', () => {
-      try {
-        const cached = localStorage.getItem('tm_local_backup');
-        if (cached) applyLoadedState(JSON.parse(cached));
-      } catch (e) {}
-
-      renderCategorizedExpenses();
-      renderIncomeTable();
-      renderHistoryTable();
-      recalcAll();
-      loadFromGoogleSheet();
-    });
-  </script>
-</body>
-</html>
+          ? "inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1
