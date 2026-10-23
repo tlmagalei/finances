@@ -744,7 +744,7 @@
       <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
         <div>
           <h3 class="font-bold text-base text-[#2D2A26]" id="histDetailTitle">Month Details</h3>
-          <p class="text-xs text-[#8C827A] mt-0.5">Full expenses, income, and PDF statement option</p>
+          <p class="text-xs text-[#8C827A] mt-0.5">Click any category to expand line items</p>
         </div>
         <button onclick="closeHistoryDetailModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
       </div>
@@ -768,14 +768,14 @@
 
         <!-- Income Section -->
         <div class="space-y-1.5">
-          <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">Income Sources</h4>
-          <div id="histDetailIncomeList" class="space-y-1 text-xs"></div>
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">Income Sources (Click to expand line items)</h4>
+          <div id="histDetailIncomeList" class="space-y-1.5 text-xs"></div>
         </div>
 
         <!-- Expenses Section -->
         <div class="space-y-1.5">
-          <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">Expense Breakdown</h4>
-          <div id="histDetailExpenseList" class="space-y-1 text-xs"></div>
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">Expense Breakdown (Click to expand line items)</h4>
+          <div id="histDetailExpenseList" class="space-y-1.5 text-xs"></div>
         </div>
       </div>
 
@@ -801,7 +801,7 @@
       </div>
       
       <p class="text-xs text-[#7A7169]">
-        This will file the current settled expenses and income into your <strong>History</strong> log and reset this month's spending and income to start fresh.
+        This will file the current settled expenses, income, and <strong>all individual line items</strong> into your <strong>History</strong> log and reset this month's spending and income to start fresh.
       </p>
 
       <div class="space-y-3 text-xs">
@@ -2288,47 +2288,89 @@
       netEl.textContent = `$${net.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       netEl.className = net >= 0 ? 'font-black text-[#2D6A4F] mono-num mt-0.5' : 'font-black text-rose-600 mono-num mt-0.5';
 
-      // Render Income Breakdown
+      // Render Income Breakdown with Drill-down Line Items
       const incomeListEl = document.getElementById('histDetailIncomeList');
+      const archivedIncomeLines = h.incomeLineItems || [];
       if (h.incomeCategories && Array.isArray(h.incomeCategories) && h.incomeCategories.length > 0) {
-        incomeListEl.innerHTML = h.incomeCategories.map(inc => `
-          <div class="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] border border-[#EFE9E1]">
-            <span class="font-medium text-[#2D2A26]">${inc.source}</span>
-            <span class="font-bold text-[#2D2A26] mono-num">$${(Number(inc.earned) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
-        `).join('');
+        incomeListEl.innerHTML = h.incomeCategories.map(inc => {
+          const items = archivedIncomeLines.filter(li => li.sourceId === inc.id);
+          const hasItems = items.length > 0;
+          return `
+            <div class="rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] overflow-hidden">
+              <div onclick="toggleHistLines('inc_${inc.id}')" class="flex justify-between items-center py-2 px-3 cursor-pointer hover:bg-[#F2EFE9] transition">
+                <div class="flex items-center gap-1.5 font-medium text-[#2D2A26]">
+                  <span class="text-[11px] font-bold text-[#8C827A]">${hasItems ? '▶' : '•'}</span>
+                  <span>${inc.source}</span>
+                  ${hasItems ? `<span class="text-[10px] text-[#8C827A]">(${items.length} item${items.length === 1 ? '' : 's'})</span>` : ''}
+                </div>
+                <span class="font-bold text-[#2D2A26] mono-num">$${(Number(inc.earned) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
+              <div id="histLines_inc_${inc.id}" class="hidden bg-white border-t border-[#FAF5EF] px-3 py-2 space-y-1">
+                ${hasItems ? items.map(it => `
+                  <div class="flex justify-between items-center text-[11px] py-1 border-b border-[#FAF5EF] last:border-0">
+                    <div>
+                      <span class="font-semibold text-[#2D2A26]">${it.note || 'No note'}</span>
+                      ${it.date ? `<span class="text-[#8C827A] ml-1.5 text-[10px]">${it.date}</span>` : ''}
+                    </div>
+                    <span class="mono-num font-bold text-[#2D2A26]">$${(Number(it.amount) || 0).toFixed(2)}</span>
+                  </div>
+                `).join('') : '<div class="text-[10px] text-[#A29990] italic py-1">No individual line items logged for this source.</div>'}
+              </div>
+            </div>
+          `;
+        }).join('');
       } else {
         incomeListEl.innerHTML = `
-          <div class="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] border border-[#EFE9E1]">
+          <div class="flex justify-between items-center py-2 px-3 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1]">
             <span class="font-medium text-[#2D2A26]">Monthly Income</span>
             <span class="font-bold text-[#2D2A26] mono-num">$${(Number(h.income) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         `;
       }
 
-      // Render Expense Breakdown
+      // Render Expense Breakdown with Drill-down Line Items
       const expenseListEl = document.getElementById('histDetailExpenseList');
+      const archivedExpenseLines = h.lineItems || [];
       if (h.expenseCategories && Array.isArray(h.expenseCategories) && h.expenseCategories.length > 0) {
-        expenseListEl.innerHTML = h.expenseCategories.map(cat => `
-          <div class="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] border border-[#EFE9E1]">
-            <div class="flex items-center gap-2">
-              <span class="font-medium text-[#2D2A26]">${cat.name}</span>
-              <span class="text-[10px] text-[#8C827A] px-1.5 py-0.5 rounded bg-white border border-[#EFE9E1]">${cat.group}</span>
+        expenseListEl.innerHTML = h.expenseCategories.map(cat => {
+          const items = archivedExpenseLines.filter(li => li.categoryId === cat.id);
+          const hasItems = items.length > 0;
+          return `
+            <div class="rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] overflow-hidden">
+              <div onclick="toggleHistLines('exp_${cat.id}')" class="flex justify-between items-center py-2 px-3 cursor-pointer hover:bg-[#F2EFE9] transition">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-bold text-[#8C827A]">${hasItems ? '▶' : '•'}</span>
+                  <span class="font-medium text-[#2D2A26]">${cat.name}</span>
+                  <span class="text-[10px] text-[#8C827A] px-1.5 py-0.5 rounded bg-white border border-[#EFE9E1]">${cat.group}</span>
+                  ${hasItems ? `<span class="text-[10px] text-[#8C827A]">(${items.length} item${items.length === 1 ? '' : 's'})</span>` : ''}
+                </div>
+                <span class="font-bold text-[#2D2A26] mono-num">$${(Number(cat.spent) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
+              <div id="histLines_exp_${cat.id}" class="hidden bg-white border-t border-[#FAF5EF] px-3 py-2 space-y-1">
+                ${hasItems ? items.map(it => `
+                  <div class="flex justify-between items-center text-[11px] py-1 border-b border-[#FAF5EF] last:border-0">
+                    <div>
+                      <span class="font-semibold text-[#2D2A26]">${it.note || 'No note'}</span>
+                      ${it.date ? `<span class="text-[#8C827A] ml-1.5 text-[10px]">${it.date}</span>` : ''}
+                    </div>
+                    <span class="mono-num font-bold text-[#2D2A26]">$${(Number(it.amount) || 0).toFixed(2)}</span>
+                  </div>
+                `).join('') : '<div class="text-[10px] text-[#A29990] italic py-1">No individual line items logged for this category.</div>'}
+              </div>
             </div>
-            <span class="font-bold text-[#2D2A26] mono-num">$${(Number(cat.spent) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } else {
         expenseListEl.innerHTML = `
-          <div class="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] border border-[#EFE9E1]">
+          <div class="flex justify-between items-center py-2 px-3 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1]">
             <span class="font-medium text-[#2D2A26]">Needs</span>
             <span class="font-bold text-[#2D2A26] mono-num">$${(Number(h.needs) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
-          <div class="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] border border-[#EFE9E1]">
+          <div class="flex justify-between items-center py-2 px-3 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1]">
             <span class="font-medium text-[#2D2A26]">Wants</span>
             <span class="font-bold text-[#2D2A26] mono-num">$${(Number(h.wants) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
-          <div class="flex justify-between items-center py-1.5 px-2.5 rounded-lg bg-[#FAF8F5] border border-[#EFE9E1]">
+          <div class="flex justify-between items-center py-2 px-3 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1]">
             <span class="font-medium text-[#2D2A26]">Savings</span>
             <span class="font-bold text-[#2D2A26] mono-num">$${(Number(h.savings) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
@@ -2336,6 +2378,13 @@
       }
 
       document.getElementById('historyDetailModal').classList.remove('hidden');
+    }
+
+    function toggleHistLines(containerId) {
+      const el = document.getElementById('histLines_' + containerId);
+      if (el) {
+        el.classList.toggle('hidden');
+      }
     }
 
     function closeHistoryDetailModal() {
@@ -2347,41 +2396,94 @@
       const h = currentViewingHistoryMonth;
       const totalSpent = (Number(h.needs) || 0) + (Number(h.wants) || 0) + (Number(h.savings) || 0);
       const net = (Number(h.income) || 0) - totalSpent;
+      const archivedExpLines = h.lineItems || [];
+      const archivedIncLines = h.incomeLineItems || [];
 
-      const incItems = (h.incomeCategories && h.incomeCategories.length > 0)
-        ? h.incomeCategories.map(i => `<tr><td style="padding: 6px 8px; border-bottom: 1px solid #eee;">${i.source}</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(i.earned) || 0).toFixed(2)}</td></tr>`).join('')
-        : `<tr><td style="padding: 6px 8px; border-bottom: 1px solid #eee;">Income</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.income) || 0).toFixed(2)}</td></tr>`;
-
-      const expItems = (h.expenseCategories && h.expenseCategories.length > 0)
-        ? h.expenseCategories.map(c => `<tr><td style="padding: 6px 8px; border-bottom: 1px solid #eee;">${c.name}</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; color: #666;">${c.group}</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(c.spent) || 0).toFixed(2)}</td></tr>`).join('')
-        : `
-          <tr><td style="padding: 6px 8px; border-bottom: 1px solid #eee;">Needs</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; color: #666;">Needs</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.needs) || 0).toFixed(2)}</td></tr>
-          <tr><td style="padding: 6px 8px; border-bottom: 1px solid #eee;">Wants</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; color: #666;">Wants</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.wants) || 0).toFixed(2)}</td></tr>
-          <tr><td style="padding: 6px 8px; border-bottom: 1px solid #eee;">Savings</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; color: #666;">Savings</td><td style="padding: 6px 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.savings) || 0).toFixed(2)}</td></tr>
+      // Build Income Sources & Line Items Table for PDF
+      let incHtml = '';
+      if (h.incomeCategories && h.incomeCategories.length > 0) {
+        incHtml = h.incomeCategories.map(inc => {
+          const items = archivedIncLines.filter(li => li.sourceId === inc.id);
+          let itemsRows = '';
+          if (items.length > 0) {
+            itemsRows = items.map(it => `
+              <tr style="background-color: #fafafa; font-size: 11px; color: #555;">
+                <td style="padding: 4px 8px 4px 24px; border-bottom: 1px dashed #eee;">↳ ${it.note || 'No description'} ${it.date ? `(${it.date})` : ''}</td>
+                <td style="padding: 4px 8px; border-bottom: 1px dashed #eee; text-align: right;">$${(Number(it.amount) || 0).toFixed(2)}</td>
+              </tr>
+            `).join('');
+          }
+          return `
+            <tr style="background-color: #f5f2ed; font-weight: bold;">
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${inc.source}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${(Number(inc.earned) || 0).toFixed(2)}</td>
+            </tr>
+            ${itemsRows}
+          `;
+        }).join('');
+      } else {
+        incHtml = `
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">Income</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.income) || 0).toFixed(2)}</td>
+          </tr>
         `;
+      }
+
+      // Build Expenses & Line Items Table for PDF
+      let expHtml = '';
+      if (h.expenseCategories && h.expenseCategories.length > 0) {
+        expHtml = h.expenseCategories.map(cat => {
+          const items = archivedExpLines.filter(li => li.categoryId === cat.id);
+          let itemsRows = '';
+          if (items.length > 0) {
+            itemsRows = items.map(it => `
+              <tr style="background-color: #fafafa; font-size: 11px; color: #555;">
+                <td style="padding: 4px 8px 4px 24px; border-bottom: 1px dashed #eee;">↳ ${it.note || 'No description'} ${it.date ? `(${it.date})` : ''}</td>
+                <td style="padding: 4px 8px; border-bottom: 1px dashed #eee; color: #888;">${cat.group}</td>
+                <td style="padding: 4px 8px; border-bottom: 1px dashed #eee; text-align: right;">$${(Number(it.amount) || 0).toFixed(2)}</td>
+              </tr>
+            `).join('');
+          }
+          return `
+            <tr style="background-color: #f5f2ed; font-weight: bold;">
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${cat.name}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; color: #666; font-size: 11px; text-transform: uppercase;">${cat.group}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${(Number(cat.spent) || 0).toFixed(2)}</td>
+            </tr>
+            ${itemsRows}
+          `;
+        }).join('');
+      } else {
+        expHtml = `
+          <tr><td style="padding: 8px; border-bottom: 1px solid #eee;">Needs</td><td style="padding: 8px; border-bottom: 1px solid #eee; color: #666;">Needs</td><td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.needs) || 0).toFixed(2)}</td></tr>
+          <tr><td style="padding: 8px; border-bottom: 1px solid #eee;">Wants</td><td style="padding: 8px; border-bottom: 1px solid #eee; color: #666;">Wants</td><td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.wants) || 0).toFixed(2)}</td></tr>
+          <tr><td style="padding: 8px; border-bottom: 1px solid #eee;">Savings</td><td style="padding: 8px; border-bottom: 1px solid #eee; color: #666;">Savings</td><td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">$${(Number(h.savings) || 0).toFixed(2)}</td></tr>
+        `;
+      }
 
       const printHtml = `
         <!DOCTYPE html>
         <html>
         <head>
-          <title>${h.month} Financial Statement - Taylor Magalei</title>
+          <title>${h.month} Statement with Line Items - Taylor Magalei</title>
           <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #2D2A26; margin: 40px; background: #fff; }
-            h1 { margin: 0 0 4px 0; font-size: 24px; }
-            .meta { font-size: 13px; color: #777; margin-bottom: 24px; }
-            .summary-box { display: flex; gap: 16px; margin-bottom: 28px; }
-            .card { flex: 1; border: 1px solid #E5E0D8; border-radius: 8px; padding: 12px; }
-            .card-label { font-size: 11px; text-transform: uppercase; color: #888; font-weight: bold; }
-            .card-val { font-size: 18px; font-weight: bold; margin-top: 4px; }
-            table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 24px; }
-            th { text-align: left; padding: 6px 8px; border-bottom: 2px solid #2D2A26; font-size: 11px; text-transform: uppercase; }
-            h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 24px; }
-            @media print { body { margin: 20mm; } }
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #2D2A26; margin: 30px; background: #fff; }
+            h1 { margin: 0 0 4px 0; font-size: 22px; font-weight: 800; }
+            .meta { font-size: 12px; color: #777; margin-bottom: 20px; }
+            .summary-box { display: flex; gap: 14px; margin-bottom: 24px; }
+            .card { flex: 1; border: 1px solid #E5E0D8; border-radius: 8px; padding: 10px 14px; }
+            .card-label { font-size: 10px; text-transform: uppercase; color: #888; font-weight: 800; letter-spacing: 0.5px; }
+            .card-val { font-size: 17px; font-weight: 800; margin-top: 3px; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+            th { text-align: left; padding: 6px 8px; border-bottom: 2px solid #2D2A26; font-size: 11px; text-transform: uppercase; font-weight: 800; }
+            h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 20px; font-weight: 800; }
+            @media print { body { margin: 15mm; } }
           </style>
         </head>
         <body>
-          <h1>Taylor Magalei - ${h.month} Statement</h1>
-          <div class="meta">Exported on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} • Personal Finances</div>
+          <h1>Taylor Magalei — ${h.month} Statement</h1>
+          <div class="meta">Exported on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} • Includes Full Itemized Ledger</div>
 
           <div class="summary-box">
             <div class="card"><div class="card-label">Total Earned</div><div class="card-val">$${(Number(h.income) || 0).toFixed(2)}</div></div>
@@ -2389,20 +2491,20 @@
             <div class="card"><div class="card-label">Net Surplus</div><div class="card-val" style="color: ${net >= 0 ? '#2D6A4F' : '#b91c1c'};">$${net.toFixed(2)}</div></div>
           </div>
 
-          <h2>Income Sources</h2>
+          <h2>Income Sources &amp; Line Items</h2>
           <table>
             <thead>
-              <tr><th>Source</th><th style="text-align: right;">Earned</th></tr>
+              <tr><th>Source / Line Item</th><th style="text-align: right;">Amount</th></tr>
             </thead>
-            <tbody>${incItems}</tbody>
+            <tbody>${incHtml}</tbody>
           </table>
 
-          <h2>Monthly Expenses Breakdown</h2>
+          <h2>Monthly Expenses &amp; Line Items</h2>
           <table>
             <thead>
-              <tr><th>Category</th><th>Group</th><th style="text-align: right;">Spent</th></tr>
+              <tr><th>Category / Line Item</th><th>Group</th><th style="text-align: right;">Spent</th></tr>
             </thead>
-            <tbody>${expItems}</tbody>
+            <tbody>${expHtml}</tbody>
           </table>
         </body>
         </html>
@@ -2481,7 +2583,9 @@
         wants: parseFloat(totalWants.toFixed(2)),
         savings: parseFloat(totalSavings.toFixed(2)),
         expenseCategories: JSON.parse(JSON.stringify(expenseCategories)),
-        incomeCategories: JSON.parse(JSON.stringify(incomeBreakdown))
+        incomeCategories: JSON.parse(JSON.stringify(incomeBreakdown)),
+        lineItems: JSON.parse(JSON.stringify(lineItems)),
+        incomeLineItems: JSON.parse(JSON.stringify(incomeLineItems))
       };
 
       if (existingIdx !== -1) {
