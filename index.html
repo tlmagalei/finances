@@ -681,11 +681,11 @@
                 <span class="font-bold text-[#2D2A26] mono-num" id="ltTargetMonthlyNetDisplay">$45,146 / mo</span>
               </div>
               <div class="flex justify-between items-center">
-                <span>Reverse Engineered Annual Gross</span>
+                <span>Annual Gross</span>
                 <button onclick="openTaxAssumptionsModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted" id="ltAnnualGrossRevDisplay">$746,220 / yr</button>
               </div>
               <div class="flex justify-between items-center border-t border-[#EFE9E1] pt-2">
-                <span>Reverse Engineered Nest Egg</span>
+                <span>Nest Egg</span>
                 <button onclick="openNestEggAssumptionsModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted" id="ltNestEggRevDisplay">$13,543,929</button>
               </div>
               <div class="flex justify-between items-center border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
@@ -710,17 +710,17 @@
                 <span>Expected Annual Growth</span>
                 <span class="font-bold text-[#2D2A26] mono-num">7.0%</span>
               </div>
-              <div class="flex justify-between">
-                <span>Projected Nest Egg at <span id="ltTrajTargetAgeLabel">55</span></span>
-                <span class="font-bold text-[#2D2A26] mono-num" id="ltTrajNestEggDisplay">$2,534,810</span>
+              <div class="flex justify-between items-center">
+                <span>Projected Nest Egg</span>
+                <button onclick="openEditTargetAgeModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted decoration-[#D6CEC5] underline-offset-4 cursor-pointer" id="ltTrajNestEggDisplay">$2,534,810</button>
               </div>
               <div class="flex justify-between border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
                 <span>Projected Monthly Retirement Income</span>
                 <span class="mono-num text-[#2D6A4F]" id="ltTrajMonthlyIncomeDisplay">$8,450 / mo</span>
               </div>
               <div class="flex justify-between items-center">
-                <span>Affordable Monthly Mortgage <span class="text-[10px] text-[#8C827A]">(28% rule)</span></span>
-                <span class="font-bold text-[#2D2A26] mono-num" id="ltAffordableMortgageDisplay">$2,366 / mo</span>
+                <span>Affordable Monthly Mortgage</span>
+                <button onclick="openHousingRuleModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted decoration-[#D6CEC5] underline-offset-4 cursor-pointer" id="ltAffordableMortgageDisplay">$2,366 / mo</button>
               </div>
               <div class="flex justify-between items-center border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
                 <span>Affordable House Price</span>
@@ -732,6 +732,35 @@
       </div>
     </section>
 
+  </div>
+
+  <!-- MODAL: HOUSING RULE (28% RULE) -->
+  <div id="housingRuleModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
+        <div>
+          <h3 class="font-bold text-base text-[#2D2A26]">Housing Budget Rule</h3>
+          <p class="text-xs text-[#8C827A] mt-0.5">Front-end housing rule guideline</p>
+        </div>
+        <button onclick="closeHousingRuleModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-[#8C827A] mb-1">Max Monthly Housing Ratio (%)</label>
+          <div class="relative">
+            <input type="number" step="0.5" min="5" max="60" id="housingRuleInput" value="28" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-sm font-bold text-[#2D2A26] focus:outline-none">
+            <span class="absolute right-3 top-2 text-[#8C827A] font-bold">%</span>
+          </div>
+        </div>
+        <div class="p-3 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-xs text-[#7A7169] leading-relaxed">
+          The <strong>28% rule</strong> is a standard lending benchmark stating that your monthly mortgage payment (principal, interest, taxes, and insurance) should not exceed 28% of your gross monthly retirement income.
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end gap-2 border-t border-[#F4EFEA]">
+        <button onclick="closeHousingRuleModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Cancel</button>
+        <button onclick="saveHousingRule()" class="bg-[#2D2A26] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-black transition">Save</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: CONFIRM RESET -->
@@ -1312,13 +1341,13 @@
     </div>
   </div>
 
-  <!-- MODAL: TAX ASSUMPTIONS (REVERSE ENGINEERED ANNUAL GROSS) -->
+  <!-- MODAL: TAX ASSUMPTIONS (ANNUAL GROSS) -->
   <div id="taxAssumptionsModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
         <div>
           <h3 class="font-bold text-base text-[#2D2A26]">Tax Assumptions</h3>
-          <p class="text-xs text-[#8C827A] mt-0.5">Used to reverse engineer gross income</p>
+          <p class="text-xs text-[#8C827A] mt-0.5">Used to calculate gross income</p>
         </div>
         <button onclick="closeTaxAssumptionsModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
       </div>
@@ -1413,34 +1442,6 @@
     </div>
   </div>
 
-  <!-- MODAL: LOG INCOME -->
-  <div id="addIncomeModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
-      <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
-        <h3 class="font-bold text-base text-[#2D2A26]">Log Income</h3>
-        <button onclick="closeAddIncomeModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
-      </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block font-semibold text-[#8C827A] mb-1">Income Earned ($)</label>
-          <input type="number" step="0.01" id="incAmountInput" placeholder="0.00" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-sm font-bold text-[#2D2A26] focus:outline-none">
-        </div>
-        <div>
-          <label class="block font-semibold text-[#8C827A] mb-1">Source</label>
-          <select id="incSourceSelect" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-xs font-semibold text-[#2D2A26] focus:outline-none">
-            <option value="salary">Salary</option>
-            <option value="other">Other Income</option>
-            <option value="extra">Extra</option>
-          </select>
-        </div>
-      </div>
-      <div class="pt-2 flex justify-end gap-2 border-t border-[#F4EFEA]">
-        <button onclick="closeAddIncomeModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Cancel</button>
-        <button onclick="submitNewIncome()" class="bg-[#2D2A26] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-black transition">Log Income</button>
-      </div>
-    </div>
-  </div>
-
   <!-- MODAL: GOAL TARGET MODAL -->
   <div id="goalTargetModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
@@ -1498,6 +1499,7 @@
 
     let dreamHomePrice = 2500000;
     let dreamDownPaymentPct = 20;
+    let housingRulePct = 28;
 
     let taxAssumptions = {
       filingStatus: 'single',
@@ -1801,6 +1803,23 @@
       return maxLoan / loanRatio;
     }
 
+    function openHousingRuleModal() {
+      document.getElementById('housingRuleInput').value = housingRulePct;
+      document.getElementById('housingRuleModal').classList.remove('hidden');
+    }
+    function closeHousingRuleModal() {
+      document.getElementById('housingRuleModal').classList.add('hidden');
+    }
+    function saveHousingRule() {
+      const val = parseFloat(document.getElementById('housingRuleInput').value);
+      if (!isNaN(val) && val > 0 && val <= 100) {
+        housingRulePct = val;
+        recalcAll();
+        window.saveState();
+      }
+      closeHousingRuleModal();
+    }
+
     function recalcLongTermProjections() {
       const loanPrincipal = Math.max(0, dreamHomePrice * ((100 - dreamDownPaymentPct) / 100));
       const estMortgage = calculateMonthlyMortgage(loanPrincipal, nestEggAssumptions.mortgageRate);
@@ -1830,12 +1849,11 @@
       const trajNestEgg = (currentRetTotal * Math.pow(1 + monthlyGrowthRate, totalMonths)) + 
                           (currentMonthlyContrib * ((Math.pow(1 + monthlyGrowthRate, totalMonths) - 1) / monthlyGrowthRate));
       const trajMonthlyIncome = (trajNestEgg * swrFraction) / 12;
-      const trajAffordableMortgage = trajMonthlyIncome * 0.28;
+      const trajAffordableMortgage = trajMonthlyIncome * (housingRulePct / 100);
       const trajAffordableHouse = calculateAffordableHome(trajAffordableMortgage, nestEggAssumptions.mortgageRate, dreamDownPaymentPct);
 
       const elTargetAge = document.getElementById('ltTargetAgeDisplay');
       const elCurrentAge = document.getElementById('ltCurrentAgeDisplay');
-      const elTrajAgeLabel = document.getElementById('ltTrajTargetAgeLabel');
       const elDreamPrice = document.getElementById('ltDreamHomePriceDisplay');
       const elDreamMortgage = document.getElementById('ltDreamMortgageDisplay');
       const elTargetNet = document.getElementById('ltTargetMonthlyNetDisplay');
@@ -1845,7 +1863,6 @@
 
       if (elTargetAge) elTargetAge.textContent = targetRetirementAge;
       if (elCurrentAge) elCurrentAge.textContent = currentAge;
-      if (elTrajAgeLabel) elTrajAgeLabel.textContent = targetRetirementAge;
       if (elDreamPrice) elDreamPrice.textContent = `$${dreamHomePrice.toLocaleString('en-US')}`;
       if (elDreamMortgage) elDreamMortgage.textContent = `$${Math.round(estMortgage).toLocaleString('en-US')} / mo`;
       if (elTargetNet) elTargetNet.textContent = `$${Math.round(targetMonthlyNet).toLocaleString('en-US')} / mo`;
@@ -2961,6 +2978,7 @@
         appPinCode,
         dreamHomePrice,
         dreamDownPaymentPct,
+        housingRulePct,
         taxAssumptions,
         nestEggAssumptions,
         balanceAccounts,
@@ -2997,6 +3015,7 @@
       }
       if (typeof data.dreamHomePrice === 'number') dreamHomePrice = data.dreamHomePrice;
       if (typeof data.dreamDownPaymentPct === 'number') dreamDownPaymentPct = data.dreamDownPaymentPct;
+      if (typeof data.housingRulePct === 'number') housingRulePct = data.housingRulePct;
       if (data.taxAssumptions) taxAssumptions = Object.assign(taxAssumptions, data.taxAssumptions);
       if (data.nestEggAssumptions) nestEggAssumptions = Object.assign(nestEggAssumptions, data.nestEggAssumptions);
       if (data.balanceAccounts) balanceAccounts = Object.assign(balanceAccounts, data.balanceAccounts);
@@ -3137,6 +3156,7 @@
       appPinCode = "1234";
       dreamHomePrice = 2500000;
       dreamDownPaymentPct = 20;
+      housingRulePct = 28;
       balanceAccounts = { hysa: 24200, brokerage: 19400, k401: 26500, roth: 0, hsa: 300 };
       accountBalances = { checkingStart: 6000.00, savingsStart: 1500.00 };
       monthlyCashBuckets = { emergency: 1000, car: 400, home: 600 };
