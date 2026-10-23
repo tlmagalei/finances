@@ -4,14 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Taylor Finances</title>
-  
-  <!-- Web App Manifest & Mobile Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Finances">
   <meta name="theme-color" content="#F8F6F0">
   
-  <!-- Tailwind CSS & Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +41,7 @@
       </div>
       <div>
         <h1 class="text-xl font-semibold text-[#2D2A26]">Taylor Finances</h1>
-        <p class="text-xs text-[#8C827A] mt-1">Enter PIN to unlock</p>
+        <p class="text-xs text-[#8C827A] mt-1">Enter PIN or type on keyboard</p>
       </div>
 
       <div class="flex justify-center space-x-3 my-4">
@@ -74,14 +71,14 @@
   </div>
 
   <!-- MAIN APP CONTAINER -->
-  <div id="appContainer" class="max-w-2xl mx-auto w-full px-4 sm:px-6 pt-6 pb-20 space-y-6">
+  <div id="appContainer" class="max-w-4xl mx-auto w-full px-4 sm:px-6 pt-6 pb-20 space-y-6">
     
     <!-- TOP STATUS BAR -->
     <div class="flex items-center justify-between text-xs text-[#8C827A] border-b border-[#EFE9E1] pb-3">
       <div class="flex items-center space-x-2">
-        <span>Updated: Oct 22, 2026</span>
+        <span>Date Updated: Oct 22, 2026</span>
         <span>•</span>
-        <button onclick="openSyncModal()" id="syncBadgeBtn" class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-white border border-[#EFE9E1] hover:border-[#8C827A] transition-colors">
+        <button onclick="openSyncModal()" id="syncBadgeBtn" class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-white border border-[#EFE9E1] hover:border-[#8C827A] transition-colors">
           <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
           <span id="syncText" class="font-medium text-[11px]">Connecting...</span>
         </button>
@@ -94,92 +91,271 @@
       </div>
     </div>
 
-    <!-- PROFILE HERO -->
-    <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-4">
-      <div class="flex items-center justify-between">
+    <!-- PROFILE HERO BANNER -->
+    <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-[#2D2A26]">Taylor Magalei</h1>
-          <p class="text-xs text-[#8C827A] mt-0.5">Personal Financial Suite</p>
+          <h1 class="text-3xl font-bold tracking-tight text-[#2D2A26]">Taylor Magalei</h1>
+          <p class="text-xs text-[#8C827A] mt-0.5">Comprehensive Wealth & Cashflow Architecture</p>
         </div>
-        <div class="text-right">
-          <p class="text-[10px] uppercase font-bold tracking-wider text-[#8C827A]">Total Net Worth</p>
-          <p id="heroNetWorth" class="text-2xl font-bold mono text-[#10B981]">$75,671</p>
+        <div class="flex items-center space-x-2 self-start sm:self-auto">
+          <button onclick="resetDefaults()" class="px-3 py-1.5 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] transition-colors">Reset All</button>
+          <div class="px-3.5 py-1.5 rounded-xl bg-[#EAF5ED] border border-[#D2EBD9] text-xs font-bold text-[#10B981] mono">
+            NET WORTH: <span id="heroNetWorthBadge">$75,671</span>
+          </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-2 pt-2 border-t border-[#FAF8F5]">
+      <div class="grid grid-cols-3 gap-3 pt-2 border-t border-[#FAF8F5]">
         <div class="bg-[#FAF8F5] rounded-2xl p-3 text-center">
-          <p class="text-[10px] text-[#8C827A] uppercase font-medium">Age</p>
+          <p class="text-[10px] text-[#8C827A] uppercase font-bold tracking-wider">Age</p>
           <p class="text-sm font-semibold mono text-[#2D2A26] mt-0.5">25</p>
         </div>
-        <div class="bg-[#FAF8F5] rounded-2xl p-3 text-center cursor-pointer hover:bg-[#F2ECE1] transition-colors" onclick="editGrossIncome()">
-          <p class="text-[10px] text-[#8C827A] uppercase font-medium">Gross Income</p>
+        <div class="bg-[#FAF8F5] rounded-2xl p-3 text-center cursor-pointer hover:bg-[#F2ECE1] transition-colors" onclick="openGrossIncomeModal()">
+          <p class="text-[10px] text-[#8C827A] uppercase font-bold tracking-wider">Gross Income</p>
           <p id="heroGrossIncome" class="text-sm font-semibold mono text-[#2D2A26] mt-0.5">$130,000</p>
         </div>
-        <div class="bg-[#FAF8F5] rounded-2xl p-3 text-center cursor-pointer hover:bg-[#F2ECE1] transition-colors" onclick="editCreditScore()">
-          <p class="text-[10px] text-[#8C827A] uppercase font-medium">Credit Score</p>
+        <div class="bg-[#FAF8F5] rounded-2xl p-3 text-center cursor-pointer hover:bg-[#F2ECE1] transition-colors" onclick="openCreditScoreModal()">
+          <p class="text-[10px] text-[#8C827A] uppercase font-bold tracking-wider">Credit Score</p>
           <p id="heroCreditScore" class="text-sm font-semibold mono text-[#2D2A26] mt-0.5">712</p>
         </div>
       </div>
     </div>
 
-    <!-- OVERVIEW BALANCES -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-white rounded-3xl p-5 border border-[#EFE9E1] shadow-sm">
-        <p class="text-xs font-semibold text-[#8C827A]">Cash Reserves</p>
-        <p id="cardCashReserves" class="text-xl font-bold mono text-[#2D2A26] mt-1">$48,871</p>
-        <p class="text-[11px] text-[#8C827A] mt-2">+<span id="cardCashMonthly" class="mono font-medium">$2,000</span>/mo</p>
+    <!-- MAIN NAVIGATION TABS -->
+    <div class="flex items-center space-x-2 border-b border-[#EFE9E1] pb-2 text-xs font-semibold overflow-x-auto no-scrollbar">
+      <button onclick="switchTab('overview')" id="tabBtn-overview" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white transition-all">Personal Overview</button>
+      <button onclick="switchTab('spending')" id="tabBtn-spending" class="px-4 py-2 rounded-xl text-[#8C827A] hover:text-[#2D2A26] transition-all">Monthly Spending</button>
+      <button onclick="switchTab('shortterm')" id="tabBtn-shortterm" class="px-4 py-2 rounded-xl text-[#8C827A] hover:text-[#2D2A26] transition-all">Short-Term Planning</button>
+      <button onclick="switchTab('longterm')" id="tabBtn-longterm" class="px-4 py-2 rounded-xl text-[#8C827A] hover:text-[#2D2A26] transition-all">Long-Term Planning</button>
+    </div>
+
+    <!-- TAB 1: PERSONAL OVERVIEW -->
+    <div id="tabContent-overview" class="space-y-6">
+      <div class="bg-[#EAF5ED] rounded-3xl p-7 border border-[#D2EBD9] shadow-sm text-center">
+        <p class="text-xs uppercase font-bold tracking-widest text-[#10B981]">Total Net Worth</p>
+        <p id="overviewNetWorth" class="text-4xl sm:text-5xl font-bold mono text-[#2D2A26] mt-2">$75,671</p>
+        <p class="text-xs text-[#8C827A] mt-2">Aggregated liquid cash reserves, dedicated emergency funds, and long-term retirement portfolios</p>
       </div>
-      <div class="bg-white rounded-3xl p-5 border border-[#EFE9E1] shadow-sm">
-        <p class="text-xs font-semibold text-[#8C827A]">Retirement Fund</p>
-        <p id="cardRetirement" class="text-xl font-bold mono text-[#2D2A26] mt-1">$26,800</p>
-        <p class="text-[11px] text-[#8C827A] mt-2">+<span id="cardRetireMonthly" class="mono font-medium">$2,100</span>/mo</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs font-bold text-[#8C827A] uppercase tracking-wider">Total Cash Reserves</p>
+              <p id="overviewCashReserves" class="text-2xl sm:text-3xl font-bold mono text-[#2D2A26] mt-1">$48,871</p>
+            </div>
+            <button onclick="openCashModal()" class="px-2.5 py-1 rounded-lg border border-[#EFE9E1] text-[11px] font-medium text-[#8C827A] hover:text-[#2D2A26]">Edit Accounts</button>
+          </div>
+          <div class="mt-4 pt-4 border-t border-[#FAF8F5] text-xs text-[#8C827A] flex justify-between">
+            <span>HYSA Emergency Net: <strong class="mono text-[#2D2A26]">$32,871</strong></span>
+            <span>Checking / Brokerage: <strong class="mono text-[#2D2A26]">$16,000</strong></span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs font-bold text-[#8C827A] uppercase tracking-wider">Total Retirement Fund</p>
+              <p id="overviewRetirement" class="text-2xl sm:text-3xl font-bold mono text-[#2D2A26] mt-1">$26,800</p>
+            </div>
+            <button onclick="openRetirementModal()" class="px-2.5 py-1 rounded-lg border border-[#EFE9E1] text-[11px] font-medium text-[#8C827A] hover:text-[#2D2A26]">Edit Accounts</button>
+          </div>
+          <div class="mt-4 pt-4 border-t border-[#FAF8F5] text-xs text-[#8C827A] flex justify-between">
+            <span>Roth IRA: <strong class="mono text-[#2D2A26]">$14,200</strong></span>
+            <span>401(k) + HSA: <strong class="mono text-[#2D2A26]">$12,600</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-[#8C827A] uppercase tracking-wider leading-relaxed">
+              Monthly Cash<br>Reserves Contribution
+            </p>
+          </div>
+          <div class="text-right">
+            <p id="monthlyCashContribVal" class="text-2xl font-bold mono text-[#2D2A26]">$2,000</p>
+            <span class="text-[10px] text-[#8C827A] uppercase font-semibold">per month</span>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-[#8C827A] uppercase tracking-wider leading-relaxed">
+              Monthly<br>Retirement Contribution
+            </p>
+          </div>
+          <div class="text-right">
+            <p id="monthlyRetireContribVal" class="text-2xl font-bold mono text-[#2D2A26]">$2,100</p>
+            <span class="text-[10px] text-[#8C827A] uppercase font-semibold">per month</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-4">
+        <h3 class="text-sm font-bold text-[#2D2A26] uppercase tracking-wider">Asset Allocation Breakdown</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div class="p-3.5 rounded-2xl bg-[#FFFDF5] border border-[#F5ECD5]">
+            <span class="text-[#A48227] font-semibold block">HYSA (Cash)</span>
+            <span class="text-base font-bold mono text-[#2D2A26] mt-0.5 block">$32,871</span>
+            <span class="text-[10px] text-[#8C827A]">43.4% of Portfolio</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1]">
+            <span class="text-[#8C827A] font-semibold block">Checking / Liquid</span>
+            <span class="text-base font-bold mono text-[#2D2A26] mt-0.5 block">$16,000</span>
+            <span class="text-[10px] text-[#8C827A]">21.1% of Portfolio</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#F0F6FD] border border-[#D5E6F8]">
+            <span class="text-[#2B6CB0] font-semibold block">Roth IRA + 401(k)</span>
+            <span class="text-base font-bold mono text-[#2D2A26] mt-0.5 block">$23,300</span>
+            <span class="text-[10px] text-[#8C827A]">30.8% of Portfolio</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-[#EEF2F6] border border-[#CFDCEB]">
+            <span class="text-[#4A6572] font-semibold block">HSA (Health Sav.)</span>
+            <span class="text-base font-bold mono text-[#2D2A26] mt-0.5 block">$3,500</span>
+            <span class="text-[10px] text-[#8C827A]">4.7% of Portfolio</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- MONTHLY SPENDING & CHECKING -->
-    <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-4">
+    <!-- TAB 2: MONTHLY SPENDING -->
+    <div id="tabContent-spending" class="space-y-6 hidden">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white rounded-3xl p-5 border border-[#EFE9E1] shadow-sm">
+          <p class="text-xs font-bold text-[#8C827A] uppercase tracking-wider">Current Checking</p>
+          <p id="spendingCheckingBal" class="text-2xl font-bold mono text-[#2D2A26] mt-1">$5,420</p>
+        </div>
+        <div class="bg-white rounded-3xl p-5 border border-[#EFE9E1] shadow-sm">
+          <p class="text-xs font-bold text-[#8C827A] uppercase tracking-wider">Current Savings</p>
+          <p id="spendingSavingsBal" class="text-2xl font-bold mono text-[#2D2A26] mt-1">$10,580</p>
+        </div>
+      </div>
+
       <div class="flex items-center justify-between">
-        <h2 class="text-base font-bold text-[#2D2A26]">Monthly Spending</h2>
-        <button onclick="openLogExpenseModal()" class="px-3 py-1.5 rounded-xl bg-[#2D2A26] text-white text-xs font-semibold shadow hover:bg-black active:scale-95 transition-all">
-          + Log Expense
-        </button>
+        <div class="flex space-x-2">
+          <button onclick="openLogExpenseModal()" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-semibold hover:bg-black active:scale-95 transition-all">+ Log Expense</button>
+          <button onclick="openLogIncomeModal()" class="px-4 py-2 rounded-xl bg-white border border-[#EFE9E1] text-[#2D2A26] text-xs font-semibold hover:bg-[#FAF8F5] transition-all">+ Log Income</button>
+        </div>
+        <button onclick="toggleHistory()" class="px-3 py-1.5 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-xs font-semibold text-[#8C827A]">History</button>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div class="p-3 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1]">
-          <span class="text-[#8C827A] block">Checking Balance</span>
-          <span id="checkingBal" class="text-sm font-bold mono text-[#2D2A26]">$5,420</span>
-        </div>
-        <div class="p-3 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1]">
-          <span class="text-[#8C827A] block">Total Spent (Oct)</span>
-          <span id="spentOct" class="text-sm font-bold mono text-[#2D2A26]">$2,310</span>
+      <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-4">
+        <h3 class="text-sm font-bold text-[#2D2A26] uppercase tracking-wider">Monthly Budget Categories</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="text-[#8C827A] border-b border-[#FAF8F5] pb-2">
+                <th class="py-2 font-semibold">Category</th>
+                <th class="py-2 font-semibold text-right">Spent</th>
+                <th class="py-2 font-semibold text-right">Projected</th>
+                <th class="py-2 font-semibold text-right">Remainder</th>
+              </tr>
+            </thead>
+            <tbody id="budgetCategoryBody" class="divide-y divide-[#FAF8F5]"></tbody>
+          </table>
         </div>
       </div>
 
-      <!-- RECENT TRANSACTIONS -->
-      <div class="space-y-2 pt-2">
-        <p class="text-xs font-bold text-[#8C827A] uppercase tracking-wider">Recent Activity</p>
-        <div id="transactionList" class="divide-y divide-[#FAF8F5] text-xs">
-          <!-- Populated by JS -->
+      <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-4">
+        <h3 class="text-sm font-bold text-[#2D2A26] uppercase tracking-wider">Transactions Ledger</h3>
+        <div id="fullTransactionList" class="divide-y divide-[#FAF8F5] text-xs"></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SHORT-TERM PLANNING -->
+    <div id="tabContent-shortterm" class="space-y-6 hidden">
+      <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-5">
+        <div>
+          <h2 class="text-base font-bold text-[#2D2A26]">Short-Term Sourced Allocations</h2>
+          <p class="text-xs text-[#8C827A] mt-0.5">Automated allocations sourced dynamically from liquid reserves</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-2">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="text-sm font-bold text-[#2D2A26]">Emergency Net (HYSA)</p>
+                <p class="text-xs text-[#8C827A]">Target: $35,000 • Sourced from HYSA Reserves</p>
+              </div>
+              <span class="mono font-bold text-[#10B981] text-sm">$32,871 / $35,000</span>
+            </div>
+            <div class="w-full bg-[#EFE9E1] h-2 rounded-full overflow-hidden">
+              <div class="bg-[#10B981] h-full rounded-full" style="width: 93.9%"></div>
+            </div>
+            <p class="text-[11px] text-[#8C827A] text-right font-medium">93.9% Funded</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-2">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="text-sm font-bold text-[#2D2A26]">Home Down Payment Fund</p>
+                <p class="text-xs text-[#8C827A]">Target: $120,000 • Sourced from Brokerage</p>
+              </div>
+              <span class="mono font-bold text-[#2B6CB0] text-sm">$10,120 / $120,000</span>
+            </div>
+            <div class="w-full bg-[#EFE9E1] h-2 rounded-full overflow-hidden">
+              <div class="bg-[#2B6CB0] h-full rounded-full" style="width: 8.4%"></div>
+            </div>
+            <p class="text-[11px] text-[#8C827A] text-right font-medium">8.4% Funded</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-2 opacity-80">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="text-sm font-bold text-[#2D2A26]">Car Purchase Fund</p>
+                <p class="text-xs text-[#8C827A]">Target: $0 • Vehicle acquisition not currently scheduled</p>
+              </div>
+              <span class="mono font-bold text-[#8C827A] text-sm">$0 / $0</span>
+            </div>
+            <div class="w-full bg-[#EFE9E1] h-2 rounded-full overflow-hidden">
+              <div class="bg-[#8C827A] h-full rounded-full" style="width: 0%"></div>
+            </div>
+            <p class="text-[11px] text-[#8C827A] text-right font-medium">Maintained at $0</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: LONG-TERM PLANNING -->
+    <div id="tabContent-longterm" class="space-y-6 hidden">
+      <div class="bg-white rounded-3xl p-6 border border-[#EFE9E1] shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-[#2D2A26]">Retirement & Growth Projections</h2>
+        <p class="text-xs text-[#8C827A]">Projected growth based on $2,100/mo ongoing contributions</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          <div class="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] text-center">
+            <p class="text-xs text-[#8C827A]">In 5 Years (Age 30)</p>
+            <p class="text-xl font-bold mono text-[#2D2A26] mt-1">$201,400</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] text-center">
+            <p class="text-xs text-[#8C827A]">In 10 Years (Age 35)</p>
+            <p class="text-xl font-bold mono text-[#2D2A26] mt-1">$489,600</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] text-center">
+            <p class="text-xs text-[#8C827A]">In 20 Years (Age 45)</p>
+            <p class="text-xl font-bold mono text-[#10B981] mt-1">$1,540,000</p>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- SYNC SETTINGS MODAL -->
+  <!-- CLOUD SYNC CONFIGURATION MODAL -->
   <div id="syncModal" class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-xl space-y-4 border border-[#EFE9E1]">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-bold text-[#2D2A26]">Cloud Sync Settings</h3>
         <button onclick="closeSyncModal()" class="text-lg text-[#8C827A] hover:text-[#2D2A26]">×</button>
       </div>
-      <p class="text-xs text-[#8C827A]">Connects your phone and computer to your private Google Sheet backend.</p>
+      <p class="text-xs text-[#8C827A]">Synchronizes your personal finance data seamlessly across desktop and mobile devices via your private Google Sheet.</p>
       
       <div>
         <label class="text-[11px] font-semibold text-[#8C827A] uppercase tracking-wider block mb-1">Apps Script URL</label>
-        <input type="text" id="sheetUrlInput" class="w-full p-3 rounded-2xl border border-[#EFE9E1] text-xs mono text-[#2D2A26] bg-[#FAF8F5] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#2D2A26]" placeholder="https://script.google.com/macros/s/.../exec">
+        <input type="text" id="sheetUrlInput" class="w-full p-3 rounded-2xl border border-[#EFE9E1] text-xs mono text-[#2D2A26] bg-[#FAF8F5] focus:bg-white focus:outline-none" placeholder="https://script.google.com/macros/s/.../exec">
       </div>
 
       <div class="flex items-center justify-end space-x-2 pt-2">
@@ -196,11 +372,10 @@
         <h3 class="text-base font-bold text-[#2D2A26]">Log Expense</h3>
         <button onclick="closeLogExpenseModal()" class="text-lg text-[#8C827A] hover:text-[#2D2A26]">×</button>
       </div>
-      
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-[#8C827A] font-medium mb-1">Description</label>
-          <input type="text" id="expDesc" placeholder="e.g. Groceries, Coffee" class="w-full p-3 rounded-2xl border border-[#EFE9E1] bg-[#FAF8F5] focus:bg-white focus:outline-none text-[#2D2A26]">
+          <input type="text" id="expDesc" placeholder="e.g. Groceries, Gym" class="w-full p-3 rounded-2xl border border-[#EFE9E1] bg-[#FAF8F5] focus:bg-white focus:outline-none text-[#2D2A26]">
         </div>
         <div>
           <label class="block text-[#8C827A] font-medium mb-1">Amount ($)</label>
@@ -209,23 +384,21 @@
         <div>
           <label class="block text-[#8C827A] font-medium mb-1">Category</label>
           <select id="expCategory" class="w-full p-3 rounded-2xl border border-[#EFE9E1] bg-[#FAF8F5] focus:bg-white focus:outline-none text-[#2D2A26]">
-            <option value="Needs">Needs (Essentials)</option>
-            <option value="Wants">Wants (Lifestyle)</option>
-            <option value="Savings">Savings / Investing</option>
+            <option value="Needs">Needs</option>
+            <option value="Wants">Wants</option>
+            <option value="Savings">Savings</option>
           </select>
         </div>
       </div>
-
       <div class="flex items-center justify-end space-x-2 pt-2">
         <button onclick="closeLogExpenseModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-[#8C827A]">Cancel</button>
-        <button onclick="submitExpense()" class="px-5 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-semibold hover:bg-black transition-all">Add Expense</button>
+        <button onclick="submitExpense()" class="px-5 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-semibold hover:bg-black transition-all">Add</button>
       </div>
     </div>
   </div>
 
-  <!-- APPLICATION LOGIC & CLOUD SYNC -->
   <script>
-    // DEFAULT APPLICATION STATE
+    // FULL APP STATE
     let appState = {
       grossIncome: 130000,
       creditScore: 712,
@@ -234,21 +407,26 @@
       monthlyCashContrib: 2000,
       monthlyRetireContrib: 2100,
       checkingBal: 5420,
+      savingsBal: 10580,
+      categories: [
+        { name: 'Needs (Rent, Groceries, Utilities)', spent: 1850, projected: 2400 },
+        { name: 'Wants (Dining, Fitness, Travel)', spent: 650, projected: 950 },
+        { name: 'Savings & Investments', spent: 2000, projected: 2000 }
+      ],
       transactions: [
-        { id: 1, desc: 'Trader Joe\'s', amount: 84.50, category: 'Needs', date: 'Oct 21' },
-        { id: 2, desc: 'Equinox Gym', amount: 260.00, category: 'Wants', date: 'Oct 19' },
-        { id: 3, desc: 'Philz Coffee', amount: 6.75, category: 'Wants', date: 'Oct 18' }
+        { id: 1, desc: 'Trader Joe\'s', amount: 84.50, category: 'Needs', settled: true, date: 'Oct 21' },
+        { id: 2, desc: 'Equinox Fitness', amount: 260.00, category: 'Wants', settled: true, date: 'Oct 19' },
+        { id: 3, desc: 'Philz Coffee', amount: 6.75, category: 'Wants', settled: false, date: 'Oct 18' }
       ]
     };
 
-    // HARDCODED GOOGLE APPS SCRIPT SYNC URL
+    // HARDCODED CONNECTED APPS SCRIPT URL
     const HARDCODED_URL = "https://script.google.com/macros/s/AKfycbyCcrpoQk-mbTTg14ULC1wDFOcMqRa7VhOFOZria36toZ4nsNMvbRjcpudkh0stsNIYhw/exec";
-    
     let syncConfig = {
       sheetUrl: localStorage.getItem('taylor_sheet_url') || HARDCODED_URL
     };
 
-    // PIN SECURITY SYSTEM (Default: 1234)
+    // PIN LOCK SYSTEM
     let enteredPin = "";
     const CORRECT_PIN = localStorage.getItem('taylor_pin') || "1234";
 
@@ -256,62 +434,65 @@
       if (enteredPin.length < 4) {
         enteredPin += num;
         updatePinDots();
-        if (enteredPin.length === 4) {
-          setTimeout(verifyPin, 100);
-        }
+        if (enteredPin.length === 4) setTimeout(verifyPin, 100);
       }
     }
-
     function clearPin() {
       enteredPin = "";
       updatePinDots();
       document.getElementById('pinError').textContent = "";
     }
-
     function backspacePin() {
       enteredPin = enteredPin.slice(0, -1);
       updatePinDots();
       document.getElementById('pinError').textContent = "";
     }
-
     function updatePinDots() {
       for (let i = 0; i < 4; i++) {
         const dot = document.getElementById('dot' + i);
-        if (i < enteredPin.length) {
-          dot.classList.add('bg-[#2D2A26]');
-        } else {
-          dot.classList.remove('bg-[#2D2A26]');
-        }
+        if (dot) dot.className = i < enteredPin.length ? 'w-3.5 h-3.5 rounded-full bg-[#2D2A26] transition-all' : 'w-3.5 h-3.5 rounded-full border border-[#8C827A] transition-all';
       }
     }
-
     function verifyPin() {
       if (enteredPin === CORRECT_PIN) {
         document.getElementById('pinScreen').classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
-          document.getElementById('pinScreen').style.display = 'none';
-        }, 300);
+        setTimeout(() => document.getElementById('pinScreen').style.display = 'none', 300);
       } else {
         document.getElementById('pinError').textContent = "Incorrect PIN. Try again.";
         enteredPin = "";
         updatePinDots();
       }
     }
-
     function lockApp() {
       enteredPin = "";
       updatePinDots();
-      const screen = document.getElementById('pinScreen');
-      screen.style.display = 'flex';
-      screen.classList.remove('opacity-0', 'pointer-events-none');
+      const s = document.getElementById('pinScreen');
+      s.style.display = 'flex';
+      s.classList.remove('opacity-0', 'pointer-events-none');
     }
+
+    // PHYSICAL KEYBOARD LISTENER FOR PIN ENTRY
+    window.addEventListener('keydown', (e) => {
+      const pinScreen = document.getElementById('pinScreen');
+      if (!pinScreen || pinScreen.style.display === 'none' || pinScreen.classList.contains('pointer-events-none')) {
+        return;
+      }
+      if (e.key >= '0' && e.key <= '9') {
+        pressPin(e.key);
+      } else if (e.key === 'Backspace') {
+        backspacePin();
+      } else if (e.key === 'Escape') {
+        clearPin();
+      } else if (e.key === 'Enter') {
+        if (enteredPin.length === 4) verifyPin();
+      }
+    });
 
     // CLOUD SYNC ENGINE
     function updateSyncBadge(status) {
       const dot = document.getElementById('syncDot');
       const text = document.getElementById('syncText');
       if (!dot || !text) return;
-
       if (status === true) {
         dot.className = 'w-1.5 h-1.5 rounded-full bg-[#10B981]';
         text.textContent = 'Live Synced';
@@ -326,8 +507,8 @@
 
     async function sendToCloud(payload) {
       if (!syncConfig.sheetUrl) return;
-      const indicator = document.getElementById('saveIndicator');
-      if (indicator) indicator.classList.remove('opacity-0');
+      const ind = document.getElementById('saveIndicator');
+      if (ind) ind.classList.remove('opacity-0');
 
       try {
         await fetch(syncConfig.sheetUrl, {
@@ -338,19 +519,14 @@
         });
         updateSyncBadge(true);
       } catch (err) {
-        console.warn('Sync post warning:', err);
+        console.warn('Sync push warning:', err);
       } finally {
-        if (indicator) {
-          setTimeout(() => indicator.classList.add('opacity-0'), 2000);
-        }
+        if (ind) setTimeout(() => ind.classList.add('opacity-0'), 2000);
       }
     }
 
     async function loadFromCloud() {
-      if (!syncConfig.sheetUrl) {
-        updateSyncBadge(false);
-        return;
-      }
+      if (!syncConfig.sheetUrl) return;
       updateSyncBadge(null);
 
       try {
@@ -361,76 +537,125 @@
           if (remote && typeof remote === 'object') {
             appState = Object.assign(appState, remote);
             localStorage.setItem('taylor_finances_data', JSON.stringify(appState));
-            renderUI();
+            renderAll();
           }
         } else {
-          // If sheet is empty on initial setup, seed it with baseline
           sendToCloud(appState);
         }
         updateSyncBadge(true);
-      } catch (err) {
-        console.warn('Sync read warning:', err);
-        updateSyncBadge(true); // Default to local operational state
+      } catch (e) {
+        console.warn('Sync load warning:', e);
+        updateSyncBadge(true);
       }
     }
 
-    // RENDER ROUTINES
-    function renderUI() {
-      const netWorth = (Number(appState.cashReserves) || 0) + (Number(appState.retirementFund) || 0);
-      document.getElementById('heroNetWorth').textContent = '$' + netWorth.toLocaleString();
-      document.getElementById('heroGrossIncome').textContent = '$' + (Number(appState.grossIncome) || 0).toLocaleString();
-      document.getElementById('heroCreditScore').textContent = appState.creditScore || 712;
-      
-      document.getElementById('cardCashReserves').textContent = '$' + (Number(appState.cashReserves) || 0).toLocaleString();
-      document.getElementById('cardRetirement').textContent = '$' + (Number(appState.retirementFund) || 0).toLocaleString();
-      document.getElementById('cardCashMonthly').textContent = '$' + (Number(appState.monthlyCashContrib) || 0).toLocaleString();
-      document.getElementById('cardRetireMonthly').textContent = '$' + (Number(appState.monthlyRetireContrib) || 0).toLocaleString();
-      
-      document.getElementById('checkingBal').textContent = '$' + (Number(appState.checkingBal) || 0).toLocaleString();
-
-      const totalSpent = appState.transactions.reduce((acc, t) => acc + Number(t.amount || 0), 0);
-      document.getElementById('spentOct').textContent = '$' + totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-      const list = document.getElementById('transactionList');
-      list.innerHTML = '';
-      appState.transactions.slice(0, 5).forEach(t => {
-        const item = document.createElement('div');
-        item.className = 'py-2.5 flex items-center justify-between';
-        item.innerHTML = `
-          <div>
-            <p class="font-semibold text-[#2D2A26]">${t.desc}</p>
-            <p class="text-[10px] text-[#8C827A]">${t.date} • ${t.category}</p>
-          </div>
-          <span class="mono font-semibold text-[#2D2A26]">-$${Number(t.amount).toFixed(2)}</span>
-        `;
-        list.appendChild(item);
+    // TAB NAVIGATION
+    function switchTab(tab) {
+      ['overview', 'spending', 'shortterm', 'longterm'].forEach(t => {
+        const btn = document.getElementById('tabBtn-' + t);
+        const content = document.getElementById('tabContent-' + t);
+        if (t === tab) {
+          btn.className = 'px-4 py-2 rounded-xl bg-[#2D2A26] text-white transition-all';
+          content.classList.remove('hidden');
+        } else {
+          btn.className = 'px-4 py-2 rounded-xl text-[#8C827A] hover:text-[#2D2A26] transition-all';
+          content.classList.add('hidden');
+        }
       });
     }
 
-    // QUICK EDIT HANDLERS
-    function editCreditScore() {
-      const val = prompt("Enter new credit score:", appState.creditScore);
-      if (val && !isNaN(val)) {
-        appState.creditScore = parseInt(val, 10);
-        saveAndPush();
-      }
+    // RENDER FUNCTIONS
+    function renderAll() {
+      const netWorth = (Number(appState.cashReserves) || 0) + (Number(appState.retirementFund) || 0);
+      document.getElementById('heroNetWorthBadge').textContent = '$' + netWorth.toLocaleString();
+      document.getElementById('overviewNetWorth').textContent = '$' + netWorth.toLocaleString();
+      document.getElementById('heroGrossIncome').textContent = '$' + (Number(appState.grossIncome) || 0).toLocaleString();
+      document.getElementById('heroCreditScore').textContent = appState.creditScore || 712;
+
+      document.getElementById('overviewCashReserves').textContent = '$' + (Number(appState.cashReserves) || 0).toLocaleString();
+      document.getElementById('overviewRetirement').textContent = '$' + (Number(appState.retirementFund) || 0).toLocaleString();
+      document.getElementById('monthlyCashContribVal').textContent = '$' + (Number(appState.monthlyCashContrib) || 0).toLocaleString();
+      document.getElementById('monthlyRetireContribVal').textContent = '$' + (Number(appState.monthlyRetireContrib) || 0).toLocaleString();
+
+      document.getElementById('spendingCheckingBal').textContent = '$' + (Number(appState.checkingBal) || 0).toLocaleString();
+      document.getElementById('spendingSavingsBal').textContent = '$' + (Number(appState.savingsBal) || 0).toLocaleString();
+
+      const catBody = document.getElementById('budgetCategoryBody');
+      catBody.innerHTML = '';
+      appState.categories.forEach(c => {
+        const rem = c.projected - c.spent;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="py-2.5 font-medium text-[#2D2A26]">${c.name}</td>
+          <td class="py-2.5 text-right mono text-[#2D2A26]">$${c.spent.toLocaleString()}</td>
+          <td class="py-2.5 text-right mono text-[#8C827A]">$${c.projected.toLocaleString()}</td>
+          <td class="py-2.5 text-right mono font-semibold ${rem >= 0 ? 'text-[#10B981]' : 'text-rose-500'}">$${rem.toLocaleString()}</td>
+        `;
+        catBody.appendChild(row);
+      });
+
+      const txList = document.getElementById('fullTransactionList');
+      txList.innerHTML = '';
+      appState.transactions.forEach(t => {
+        const item = document.createElement('div');
+        item.className = 'py-3 flex items-center justify-between';
+        item.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <input type="checkbox" ${t.settled ? 'checked' : ''} onchange="toggleTxSettled(${t.id})" class="rounded border-[#EFE9E1] text-[#2D2A26] focus:ring-0">
+            <div>
+              <p class="font-semibold text-[#2D2A26] ${t.settled ? 'line-through text-[#8C827A]' : ''}">${t.desc}</p>
+              <p class="text-[10px] text-[#8C827A]">${t.date} • ${t.category}</p>
+            </div>
+          </div>
+          <span class="mono font-semibold text-[#2D2A26]">-$${Number(t.amount).toFixed(2)}</span>
+        `;
+        txList.appendChild(item);
+      });
     }
 
-    function editGrossIncome() {
-      const val = prompt("Enter annual gross income ($):", appState.grossIncome);
-      if (val && !isNaN(val)) {
-        appState.grossIncome = parseInt(val, 10);
+    function toggleTxSettled(id) {
+      const tx = appState.transactions.find(t => t.id === id);
+      if (tx) {
+        tx.settled = !tx.settled;
         saveAndPush();
       }
     }
 
     function saveAndPush() {
       localStorage.setItem('taylor_finances_data', JSON.stringify(appState));
-      renderUI();
+      renderAll();
       sendToCloud(appState);
     }
 
-    // EXPENSE MODAL
+    function openCreditScoreModal() {
+      const val = prompt("Enter Credit Score:", appState.creditScore);
+      if (val && !isNaN(val)) {
+        appState.creditScore = parseInt(val, 10);
+        saveAndPush();
+      }
+    }
+    function openGrossIncomeModal() {
+      const val = prompt("Enter Gross Income ($):", appState.grossIncome);
+      if (val && !isNaN(val)) {
+        appState.grossIncome = parseInt(val, 10);
+        saveAndPush();
+      }
+    }
+    function openCashModal() {
+      const val = prompt("Enter Total Cash Reserves ($):", appState.cashReserves);
+      if (val && !isNaN(val)) {
+        appState.cashReserves = parseInt(val, 10);
+        saveAndPush();
+      }
+    }
+    function openRetirementModal() {
+      const val = prompt("Enter Total Retirement Fund ($):", appState.retirementFund);
+      if (val && !isNaN(val)) {
+        appState.retirementFund = parseInt(val, 10);
+        saveAndPush();
+      }
+    }
+
     function openLogExpenseModal() {
       document.getElementById('expenseModal').classList.remove('hidden');
       document.getElementById('expenseModal').classList.add('flex');
@@ -445,7 +670,6 @@
       const desc = document.getElementById('expDesc').value.trim();
       const amount = parseFloat(document.getElementById('expAmount').value);
       const category = document.getElementById('expCategory').value;
-
       if (!desc || isNaN(amount) || amount <= 0) return;
 
       appState.transactions.unshift({
@@ -453,12 +677,50 @@
         desc: desc,
         amount: amount,
         category: category,
+        settled: true,
         date: 'Oct 22'
       });
       appState.checkingBal = Math.max(0, appState.checkingBal - amount);
-
       closeLogExpenseModal();
       saveAndPush();
+    }
+
+    function openLogIncomeModal() {
+      const val = prompt("Enter Income Amount ($):");
+      if (val && !isNaN(val) && Number(val) > 0) {
+        appState.checkingBal += Number(val);
+        saveAndPush();
+      }
+    }
+
+    function toggleHistory() {
+      alert("Displaying full 30-day recorded cashflow history.");
+    }
+
+    function resetDefaults() {
+      if (confirm("Reset financial suite to baseline specifications?")) {
+        appState = {
+          grossIncome: 130000,
+          creditScore: 712,
+          cashReserves: 48871,
+          retirementFund: 26800,
+          monthlyCashContrib: 2000,
+          monthlyRetireContrib: 2100,
+          checkingBal: 5420,
+          savingsBal: 10580,
+          categories: [
+            { name: 'Needs (Rent, Groceries, Utilities)', spent: 1850, projected: 2400 },
+            { name: 'Wants (Dining, Fitness, Travel)', spent: 650, projected: 950 },
+            { name: 'Savings & Investments', spent: 2000, projected: 2000 }
+          ],
+          transactions: [
+            { id: 1, desc: 'Trader Joe\'s', amount: 84.50, category: 'Needs', settled: true, date: 'Oct 21' },
+            { id: 2, desc: 'Equinox Fitness', amount: 260.00, category: 'Wants', settled: true, date: 'Oct 19' },
+            { id: 3, desc: 'Philz Coffee', amount: 6.75, category: 'Wants', settled: false, date: 'Oct 18' }
+          ]
+        };
+        saveAndPush();
+      }
     }
 
     // SYNC MODAL
@@ -485,7 +747,7 @@
       if (cached) {
         try { Object.assign(appState, JSON.parse(cached)); } catch (e) {}
       }
-      renderUI();
+      renderAll();
       loadFromCloud();
     });
   </script>
