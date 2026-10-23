@@ -566,9 +566,9 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <div class="lg:col-span-7 space-y-4">
-            <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">Funds</h3>
+            <div class="flex items-center justify-between gap-2"><h3 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">Funds</h3><button type="button" onclick="openShortFundAdd()" class="px-3 py-2 rounded-xl bg-white border border-[#EFE9E1] text-xs font-bold text-[#2D2A26]">+ Add Fund</button></div><p class="text-[11px] text-[#8C827A]">Use ↑ ↓ to set funding priority. Contributions flow to the next goal when a higher-priority goal is funded.</p><div id="shortFundCards" class="space-y-4">
             
-            <div class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3">
+            <div data-short-fund="emergency" class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <div>
                   <span class="font-extrabold text-[#2D2A26] text-sm sm:text-base">Emergency Safety Net</span>
@@ -576,7 +576,7 @@
                 <div class="flex items-center gap-2">
                   <span class="text-xs text-[#8C827A]">Target:</span>
                   <button onclick="openGoalTargetModal('emergency')" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num" id="stEmergencyTargetBtn">$36,000</button>
-                </div>
+                <span class="inline-flex gap-1 ml-1"><button type="button" onclick="event.stopPropagation();moveShortFund('emergency',-1)" aria-label="Move fund up" class="px-1 font-bold">↑</button><button type="button" onclick="event.stopPropagation();moveShortFund('emergency',1)" aria-label="Move fund down" class="px-1 font-bold">↓</button></span></div>
               </div>
               <div class="space-y-1">
                 <div class="w-full bg-[#EFE9E1] h-3 rounded-full overflow-hidden">
@@ -589,7 +589,7 @@
               </div>
             </div>
 
-            <div class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3">
+            <div data-short-fund="car" class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <div>
                   <span class="font-extrabold text-[#2D2A26] text-sm sm:text-base">Car Purchase Fund</span>
@@ -598,7 +598,7 @@
                 <div class="flex items-center gap-2">
                   <span class="text-xs text-[#8C827A]">Target:</span>
                   <button onclick="openGoalTargetModal('car')" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num" id="stCarTargetBtn">$30,000</button>
-                </div>
+                <span class="inline-flex gap-1 ml-1"><button type="button" onclick="event.stopPropagation();moveShortFund('car',-1)" aria-label="Move fund up" class="px-1 font-bold">↑</button><button type="button" onclick="event.stopPropagation();moveShortFund('car',1)" aria-label="Move fund down" class="px-1 font-bold">↓</button></span></div>
               </div>
               <div class="space-y-1">
                 <div class="w-full bg-[#EFE9E1] h-3 rounded-full overflow-hidden">
@@ -611,7 +611,7 @@
               </div>
             </div>
 
-            <div class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3">
+            <div data-short-fund="home" class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <div>
                   <span class="font-extrabold text-[#2D2A26] text-sm sm:text-base">Home Down Payment</span>
@@ -619,7 +619,7 @@
                 <div class="flex items-center gap-2">
                   <span class="text-xs text-[#8C827A]">Target:</span>
                   <button onclick="openHomeDownPaymentCalcModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num" id="stHomeTargetBtn">$500,000</button>
-                </div>
+                <span class="inline-flex gap-1 ml-1"><button type="button" onclick="event.stopPropagation();moveShortFund('home',-1)" aria-label="Move fund up" class="px-1 font-bold">↑</button><button type="button" onclick="event.stopPropagation();moveShortFund('home',1)" aria-label="Move fund down" class="px-1 font-bold">↓</button></span></div>
               </div>
               <div class="space-y-1">
                 <div class="w-full bg-[#EFE9E1] h-3 rounded-full overflow-hidden">
@@ -630,6 +630,8 @@
                 </div>
               </div>
             </div>
+            <div id="shortFundExtras" class="space-y-4"></div>
+          </div>
           </div>
 
           <div class="lg:col-span-5 space-y-4">
@@ -659,7 +661,7 @@
 
             <div class="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3">
               <div class="flex justify-between items-center">
-                <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">One-Time Cash Injection</h4>
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">One-Time Contribution</h4>
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-2xl font-black text-[#2D2A26] mono-num" id="oneTimeScheduledDisplay">$0</span>
@@ -1701,6 +1703,26 @@
   </div>
 
   <!-- JAVASCRIPT STATE ENGINE -->
+
+  <div id="shortFundModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden p-4 flex items-center justify-center">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-xl">
+      <h3 id="shortFundModalTitle" class="font-bold text-[#2D2A26]">Add Fund</h3>
+      <label class="block text-xs text-[#8C827A]">Fund name<input id="shortFundName" maxlength="60" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-sm"></label>
+      <label class="block text-xs text-[#8C827A]">Target ($)<input id="shortFundTarget" type="number" min="0" step="0.01" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-sm"></label>
+      <label class="block text-xs text-[#8C827A]">Current funded amount ($)<input id="shortFundBalance" type="number" min="0" step="0.01" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-sm"></label>
+      <div class="flex justify-end gap-2"><button onclick="closeShortFundModal()" class="px-4 py-2 text-xs font-bold">Cancel</button><button onclick="saveShortFund()" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Save</button></div>
+    </div>
+  </div>
+  <div id="shortFundTransferModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden p-4 flex items-center justify-center">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-xl">
+      <h3 class="font-bold text-[#2D2A26]">Move Money Between Funds</h3>
+      <label class="block text-xs text-[#8C827A]">From<select id="shortFundFrom" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-sm"></select></label>
+      <label class="block text-xs text-[#8C827A]">To<select id="shortFundTo" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-sm"></select></label>
+      <label class="block text-xs text-[#8C827A]">Amount ($)<input id="shortFundTransferAmount" type="number" min="0.01" step="0.01" class="mt-1 w-full px-3 py-2 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5] text-sm"></label>
+      <p id="shortFundTransferError" class="text-xs text-rose-600"></p>
+      <div class="flex justify-end gap-2"><button onclick="document.getElementById('shortFundTransferModal').classList.add('hidden')" class="px-4 py-2 text-xs font-bold">Cancel</button><button onclick="saveShortFundTransfer()" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Transfer</button></div>
+    </div>
+  </div>
   <script>
     const HARDCODED_URL = "https://script.google.com/macros/s/AKfycbyCcrpoQk-mbTTg14ULC1wDFOcMqRa7VhOFOZria36toZ4nsNMvbRjcpudkh0stsNIYhw/exec";
     let GOOGLE_SHEET_WEBAPP_URL = localStorage.getItem('tm_sheet_url') || HARDCODED_URL;
@@ -1794,6 +1816,11 @@
       car: 400,
       home: 600
     };
+
+    let shortFunds = [];
+    let shortFundOrder = ["emergency", "car", "home"];
+    let carFundBalance = 0;
+    let shortFundEditing = null;
 
     let goalTargets = {
       emergency: 36000,
@@ -2256,6 +2283,52 @@
       closeHousingRuleModal();
     }
 
+
+    // Short-term fund priority and internal fund-to-fund allocation.
+    function shortFundList() {
+      return [{id:'emergency',name:'Emergency Safety Net',target:goalTargets.emergency},
+              {id:'car',name:'Car Purchase Fund',target:goalTargets.car},
+              {id:'home',name:'Home Down Payment',target:goalTargets.home},...shortFunds];
+    }
+    function shortFundBalance(id) {
+      if(id==='emergency') return balanceAccounts.hysa;
+      if(id==='home') return balanceAccounts.brokerage;
+      if(id==='car') return carFundBalance;
+      return shortFunds.find(f=>f.id===id)?.balance || 0;
+    }
+    function setShortFundBalance(id,amount) {
+      amount=Math.round(amount*100)/100;
+      if(id==='emergency') balanceAccounts.hysa=amount;
+      else if(id==='home') balanceAccounts.brokerage=amount;
+      else if(id==='car') carFundBalance=amount;
+      else {const f=shortFunds.find(f=>f.id===id);if(f)f.balance=amount;}
+    }
+    function escapeShortFundText(str) {return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function openShortFundAdd(){shortFundEditing=null;document.getElementById('shortFundModalTitle').textContent='Add Fund';['shortFundName','shortFundTarget','shortFundBalance'].forEach(id=>document.getElementById(id).value='');document.getElementById('shortFundModal').classList.remove('hidden');}
+    function editShortFund(id){const f=shortFunds.find(x=>x.id===id);if(!f)return;shortFundEditing=id;document.getElementById('shortFundModalTitle').textContent='Edit Fund';document.getElementById('shortFundName').value=f.name;document.getElementById('shortFundTarget').value=f.target;document.getElementById('shortFundBalance').value=f.balance;document.getElementById('shortFundModal').classList.remove('hidden');}
+    function closeShortFundModal(){document.getElementById('shortFundModal').classList.add('hidden');}
+    function saveShortFund(){const name=document.getElementById('shortFundName').value.trim(),target=Number(document.getElementById('shortFundTarget').value),balance=Number(document.getElementById('shortFundBalance').value);if(!name||!Number.isFinite(target)||target<0||!Number.isFinite(balance)||balance<0){alert('Enter a fund name and nonnegative amounts.');return;}if(shortFundEditing){Object.assign(shortFunds.find(f=>f.id===shortFundEditing),{name,target,balance});}else{const id='fund_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);shortFunds.push({id,name,target,balance});shortFundOrder.push(id);}closeShortFundModal();recalcAll();window.saveState();}
+    function removeShortFund(id){const f=shortFunds.find(x=>x.id===id);if(!f||!confirm('Remove '+f.name+'? Its allocated balance will be removed from this fund tracker.'))return;shortFunds=shortFunds.filter(x=>x.id!==id);shortFundOrder=shortFundOrder.filter(x=>x!==id);recalcAll();window.saveState();}
+    function moveShortFund(id,step){const ids=shortFundOrder.filter(x=>shortFundList().some(f=>f.id===x));const i=ids.indexOf(id),j=i+step;if(i<0||j<0||j>=ids.length)return;[ids[i],ids[j]]=[ids[j],ids[i]];shortFundOrder=ids;recalcAll();window.saveState();}
+    function openShortFundTransfer(id){const funds=shortFundList(),html=funds.map(f=>'<option value="'+f.id+'">'+escapeShortFundText(f.name)+'</option>').join('');document.getElementById('shortFundFrom').innerHTML=html;document.getElementById('shortFundTo').innerHTML=html;document.getElementById('shortFundFrom').value=id||funds[0].id;document.getElementById('shortFundTo').value=funds.find(f=>f.id!==document.getElementById('shortFundFrom').value)?.id||funds[0].id;document.getElementById('shortFundTransferAmount').value='';document.getElementById('shortFundTransferError').textContent='';document.getElementById('shortFundTransferModal').classList.remove('hidden');}
+    function saveShortFundTransfer(){const from=document.getElementById('shortFundFrom').value,to=document.getElementById('shortFundTo').value,amount=Number(document.getElementById('shortFundTransferAmount').value),error=document.getElementById('shortFundTransferError');if(from===to||!Number.isFinite(amount)||amount<=0){error.textContent='Choose different funds and a positive amount.';return;}if(amount>shortFundBalance(from)+0.00001){error.textContent='Amount exceeds the available fund balance.';return;}setShortFundBalance(from,shortFundBalance(from)-amount);setShortFundBalance(to,shortFundBalance(to)+amount);document.getElementById('shortFundTransferModal').classList.add('hidden');recalcAll();window.saveState();}
+    function renderShortFunds(){
+      const list=shortFundList(),ids=list.map(f=>f.id);shortFundOrder=[...shortFundOrder.filter(id=>ids.includes(id)),...ids.filter(id=>!shortFundOrder.includes(id))];
+      const root=document.getElementById('shortFundCards'),extra=document.getElementById('shortFundExtras');if(!root||!extra)return;
+      for(const f of shortFunds){let card=extra.querySelector('[data-short-fund="'+f.id+'"]');if(!card){card=document.createElement('div');card.dataset.shortFund=f.id;card.className='p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFE9E1] space-y-3';extra.appendChild(card);}}
+      // Monthly allocation waterfall is a projection, not a transaction; no bank balance changes occur on reordering.
+      let remaining=Object.values(monthlyCashBuckets).reduce((sum,v)=>sum+(Number(v)||0),0);
+      for(const id of shortFundOrder){const f=list.find(x=>x.id===id);if(!f)continue;const bal=shortFundBalance(id),gap=Math.max(0,f.target-bal),monthly=Math.min(Math.max(0,remaining),gap);remaining=Math.max(0,remaining-monthly);
+        let card=root.querySelector('[data-short-fund="'+id+'"]')||extra.querySelector('[data-short-fund="'+id+'"]');if(!card)continue;
+        if(id.startsWith('fund_')){const pct=f.target>0?Math.min(100,bal/f.target*100):0;card.innerHTML='<div class="flex items-center justify-between gap-2"><span class="font-extrabold text-[#2D2A26] text-sm">'+escapeShortFundText(f.name)+'</span><div class="flex items-center gap-1"><button onclick="moveShortFund(\''+id+'\',-1)" class="px-1 font-bold">↑</button><button onclick="moveShortFund(\''+id+'\',1)" class="px-1 font-bold">↓</button></div></div><div class="flex justify-between text-xs text-[#8C827A]"><span>Target: $'+f.target.toLocaleString('en-US')+'</span><button onclick="editShortFund(\''+id+'\')" class="font-bold underline">Edit</button></div><div class="w-full bg-[#EFE9E1] h-3 rounded-full overflow-hidden"><div class="bg-[#2D6A4F] h-full rounded-full" style="width:'+pct+'%"></div></div><div class="text-xs text-[#8C827A]">$'+bal.toLocaleString('en-US')+' funded ('+pct.toFixed(1)+'%)</div><button onclick="removeShortFund(\''+id+'\')" class="text-xs text-[#8C827A] underline">Remove fund</button>';}
+        let actions=card.querySelector('.short-fund-actions');if(!actions){actions=document.createElement('div');actions.className='short-fund-actions flex items-center justify-between gap-2 text-xs text-[#8C827A] border-t border-[#EFE9E1] pt-2';card.appendChild(actions);}actions.innerHTML='<span>Priority '+(shortFundOrder.indexOf(id)+1)+' · Next $'+monthly.toLocaleString('en-US',{maximumFractionDigits:2})+'/mo</span><button class="font-bold text-[#2D2A26] underline" onclick="openShortFundTransfer(\''+id+'\')">Move Money</button>';
+        root.appendChild(card);
+      }
+      // Remove detached wrapper used only for newly created cards.
+      root.appendChild(extra);
+      const carCard=root.querySelector('[data-short-fund="car"]');if(carCard){const bar=carCard.querySelector('.bg-\[\#2D6A4F\]');if(bar)bar.style.width=(goalTargets.car?Math.min(100,carFundBalance/goalTargets.car*100):0)+'%';const funded=carCard.querySelector('.flex.justify-between.text-xs.text-\[\#8C827A\] span');if(funded)funded.textContent='$'+carFundBalance.toLocaleString('en-US')+' funded ('+(goalTargets.car?Math.min(100,carFundBalance/goalTargets.car*100):0).toFixed(1)+'%)';}
+    }
+
     function recalcAll() {
       const balances = recalcCashFlowBalances();
       const combinedLiquid = balances.checkingCurrent + balances.savingsCurrent;
@@ -2350,6 +2423,7 @@
       recalcLongTermProjections();
       renderAssetAllocationDonut(combinedLiquid, balanceAccounts.hysa, balanceAccounts.brokerage, balanceAccounts.k401, balanceAccounts.roth, balanceAccounts.hsa);
       refreshExtras();
+      renderShortFunds();
     }
 
     function renderAssetAllocationDonut(checking, hysa, brokerage, k401, roth, hsa) {
@@ -3847,7 +3921,7 @@
         ret401kSettings,
         monthlyCashBuckets,
         goalTargets,
-        oneTimeContribution,addedAccounts,addedContributions,rothMonthly,hsaPaycheck,hsaEmployer,hsaEmployerMode
+        oneTimeContribution,shortFunds,shortFundOrder,carFundBalance,addedAccounts,addedContributions,rothMonthly,hsaPaycheck,hsaEmployer,hsaEmployerMode
       };
     }
 
@@ -3890,6 +3964,9 @@
       if (data.monthlyCashBuckets) monthlyCashBuckets = Object.assign(monthlyCashBuckets, data.monthlyCashBuckets);
       if (data.goalTargets) goalTargets = Object.assign(goalTargets, data.goalTargets);
       if (data.oneTimeContribution) oneTimeContribution = Object.assign(oneTimeContribution, data.oneTimeContribution);
+      if(Array.isArray(data.shortFunds))shortFunds=data.shortFunds;
+      if(Array.isArray(data.shortFundOrder))shortFundOrder=data.shortFundOrder;
+      if(typeof data.carFundBalance==='number')carFundBalance=data.carFundBalance;
       if(data.addedAccounts)addedAccounts=data.addedAccounts;if(data.addedContributions)addedContributions=data.addedContributions;
       if(typeof data.rothMonthly==='number')rothMonthly=data.rothMonthly;if(typeof data.hsaPaycheck==='number')hsaPaycheck=data.hsaPaycheck;if(typeof data.hsaEmployer==='number')hsaEmployer=data.hsaEmployer;if(data.hsaEmployerMode)hsaEmployerMode=data.hsaEmployerMode;
     }
@@ -4001,6 +4078,24 @@
         sendToGoogleSheet(payload);
       }, 350);
     };
+
+    // Pressing Enter in a modal's small text/number field activates its existing save action.
+    document.addEventListener('keydown', function(event) {
+      if (event.key !== 'Enter' || event.isComposing || event.repeat || event.defaultPrevented ||
+          event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
+      const field = event.target;
+      if (!(field instanceof HTMLInputElement) ||
+          !['text', 'number', 'date', 'email', 'url', 'tel', 'search'].includes(field.type)) return;
+      const modal = field.closest('[id$="Modal"]');
+      if (!modal || modal.classList.contains('hidden')) return;
+      const actions = Array.from(modal.querySelectorAll('button[onclick]'));
+      const saveButton = actions.find(button =>
+        /^(save|add|update|apply|transfer|log|confirm)$/i.test(button.textContent.trim()) &&
+        !button.disabled && button.getClientRects().length > 0);
+      if (!saveButton) return;
+      event.preventDefault();
+      saveButton.click();
+    });
 
     window.addEventListener('DOMContentLoaded', () => {
       try {
