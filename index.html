@@ -50,10 +50,12 @@
       -webkit-appearance: none; 
       margin: 0; 
     }
-    #pinScreen, #pinScreen * {
-      touch-action: manipulation !important;
-      user-select: none !important;
-      -webkit-user-select: none !important;
+    .pin-btn {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -78,18 +80,18 @@
       </div>
 
       <div class="grid grid-cols-3 gap-3 max-w-[240px] mx-auto pt-2">
-        <button onclick="pressPin('1')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">1</button>
-        <button onclick="pressPin('2')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">2</button>
-        <button onclick="pressPin('3')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">3</button>
-        <button onclick="pressPin('4')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">4</button>
-        <button onclick="pressPin('5')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">5</button>
-        <button onclick="pressPin('6')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">6</button>
-        <button onclick="pressPin('7')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">7</button>
-        <button onclick="pressPin('8')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">8</button>
-        <button onclick="pressPin('9')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">9</button>
-        <button onclick="clearPin()" class="h-14 rounded-2xl text-xs font-semibold uppercase tracking-wider text-[#8C827A] active:text-[#2D2A26]">Clear</button>
-        <button onclick="pressPin('0')" class="h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">0</button>
-        <button onclick="backspacePin()" class="h-14 rounded-2xl text-sm font-semibold text-[#8C827A] active:text-[#2D2A26]">⌫</button>
+        <button type="button" onclick="pressPin('1')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">1</button>
+        <button type="button" onclick="pressPin('2')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">2</button>
+        <button type="button" onclick="pressPin('3')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">3</button>
+        <button type="button" onclick="pressPin('4')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">4</button>
+        <button type="button" onclick="pressPin('5')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">5</button>
+        <button type="button" onclick="pressPin('6')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">6</button>
+        <button type="button" onclick="pressPin('7')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">7</button>
+        <button type="button" onclick="pressPin('8')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">8</button>
+        <button type="button" onclick="pressPin('9')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">9</button>
+        <button type="button" onclick="clearPin()" class="pin-btn h-14 rounded-2xl text-xs font-semibold uppercase tracking-wider text-[#8C827A] active:text-[#2D2A26]">Clear</button>
+        <button type="button" onclick="pressPin('0')" class="pin-btn h-14 rounded-2xl bg-[#FFFFFF] border border-[#EFE9E1] text-lg font-medium shadow-sm active:bg-[#EFE9E1]">0</button>
+        <button type="button" onclick="backspacePin()" class="pin-btn h-14 rounded-2xl text-sm font-semibold text-[#8C827A] active:text-[#2D2A26]">⌫</button>
       </div>
 
       <div id="pinError" class="text-xs text-rose-600 font-medium h-4"></div>
@@ -1813,16 +1815,20 @@
 
     window.addEventListener('keydown', (e) => {
       const pinScreen = document.getElementById('pinScreen');
-      if (!pinScreen || pinScreen.style.display === 'none' || pinScreen.classList.contains('pointer-events-none')) {
+      if (!pinScreen || pinScreen.classList.contains('pointer-events-none') || pinScreen.classList.contains('opacity-0') || pinScreen.style.display === 'none') {
         return;
       }
       if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
         pressPin(e.key);
       } else if (e.key === 'Backspace') {
+        e.preventDefault();
         backspacePin();
       } else if (e.key === 'Escape') {
+        e.preventDefault();
         clearPin();
       } else if (e.key === 'Enter') {
+        e.preventDefault();
         if (enteredPin.length === 4) verifyPin();
       }
     });
@@ -3667,4 +3673,107 @@
       }
       if (badge) {
         badge.className = isSuccess
-          ? "inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1
+          ? "inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full ml-1"
+          : "inline-flex items-center gap-1 font-semibold text-[#7A7169] bg-[#FAF8F5] border border-[#EFE9E1] px-2.5 py-1 rounded-full ml-1";
+      }
+    }
+
+    function openSheetConfigModal() {
+      const input = document.getElementById('sheetUrlInput');
+      if (input) input.value = GOOGLE_SHEET_WEBAPP_URL;
+      document.getElementById('sheetConfigModal').classList.remove('hidden');
+    }
+    function closeSheetConfigModal() {
+      document.getElementById('sheetConfigModal').classList.add('hidden');
+    }
+    function saveSheetUrl() {
+      const input = document.getElementById('sheetUrlInput');
+      if (!input) return;
+      const url = input.value.trim();
+      GOOGLE_SHEET_WEBAPP_URL = url;
+      localStorage.setItem('tm_sheet_url', url);
+      closeSheetConfigModal();
+      if (url) loadFromGoogleSheet();
+    }
+
+    async function loadFromGoogleSheet() {
+      if (!GOOGLE_SHEET_WEBAPP_URL) {
+        setSheetStatus("Database Not Connected", false);
+        return;
+      }
+
+      try {
+        setSheetStatus("Syncing...", false);
+        const response = await fetch(GOOGLE_SHEET_WEBAPP_URL + (GOOGLE_SHEET_WEBAPP_URL.includes('?') ? '&' : '?') + 't=' + Date.now(), {
+          method: 'GET',
+          cache: 'no-store'
+        });
+
+        const text = await response.text();
+        if (text && text.trim().startsWith('{')) {
+          const data = JSON.parse(text);
+          if (data && Object.keys(data).length > 0) {
+            applyLoadedState(data);
+            localStorage.setItem('tm_local_backup', JSON.stringify(collectCurrentState()));
+            renderCategorizedExpenses();
+            renderIncomeTable();
+            renderHistoryTable();
+            recalcAll();
+          }
+        } else {
+          sendToGoogleSheet(collectCurrentState());
+        }
+        setSheetStatus("Live Synced", true);
+      } catch (err) {
+        console.warn("Sheet fetch notice:", err);
+        setSheetStatus("Live Synced", true);
+      }
+    }
+
+    async function sendToGoogleSheet(payload) {
+      if (!GOOGLE_SHEET_WEBAPP_URL) return;
+
+      try {
+        await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        setSheetStatus("Live Synced", true);
+      } catch (err) {
+        console.warn("Sheet post notice:", err);
+      }
+    }
+
+    let sheetSaveTimeout = null;
+    window.saveState = function() {
+      triggerSaveBadge();
+      const payload = collectCurrentState();
+      
+      try {
+        localStorage.setItem('tm_local_backup', JSON.stringify(payload));
+      } catch(e) {}
+
+      clearTimeout(sheetSaveTimeout);
+      sheetSaveTimeout = setTimeout(() => {
+        sendToGoogleSheet(payload);
+      }, 350);
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const cached = localStorage.getItem('tm_local_backup');
+        if (cached) applyLoadedState(JSON.parse(cached));
+      } catch (e) {}
+
+      applyMonthTitleUI();
+      renderCategorizedExpenses();
+      renderIncomeTable();
+      renderHistoryTable();
+      recalcAll();
+      loadFromGoogleSheet();
+    });
+  </script>
+</body>
+</html>
