@@ -105,7 +105,7 @@
       <div class="flex flex-wrap items-center justify-between text-xs text-[#A29990] border-b border-[#FAF5EF] pb-3 gap-2">
         <button onclick="openSheetConfigModal()" class="flex items-center gap-2 hover:opacity-80 transition cursor-pointer text-left">
           <span id="cloudStatusDot" class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-          <span>Date Updated: <span class="font-medium text-[#7A7169]">Oct 22, 2026</span></span>
+          <span>Date Updated: <span class="font-medium text-[#7A7169]">Oct 23, 2026</span></span>
           <span id="cloudStatusBadge" class="inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full ml-1">
             <span id="cloudStatusText">Live Synced</span>
           </span>
@@ -116,8 +116,9 @@
             <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
             Saved to Sheet
           </span>
-          <button onclick="loadFromGoogleSheet()" class="text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Sync</button>
-          <button onclick="openChangePinModal()" class="text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Change PIN</button>
+          <!-- Same length and width for Sync and Change PIN -->
+          <button onclick="loadFromGoogleSheet()" class="min-w-[90px] text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Sync</button>
+          <button onclick="openChangePinModal()" class="min-w-[90px] text-center text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition">Change PIN</button>
           <button onclick="openSheetConfigModal()" class="text-xs font-semibold text-[#8C827A] hover:text-[#2D2A26] px-2.5 py-1.5 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] transition flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
             <span>Google Sheet</span>
@@ -142,7 +143,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <button onclick="promptResetDefaults()" class="text-xs font-semibold text-[#8C827A] hover:text-[#9E4D34] transition">Reset All</button>
           <div class="bg-[#F4EFEA] border border-[#EAE3D9] px-3.5 py-1.5 rounded-full flex items-center gap-2">
             <span class="text-[11px] font-bold tracking-wider text-[#8C827A] uppercase">Net Worth</span>
             <span class="text-sm sm:text-base font-extrabold text-[#2D2A26] mono-num" id="headerNetWorthDisplay">$75,671</span>
@@ -318,6 +318,14 @@
 
     <!-- TAB 2: MONTHLY SPENDING -->
     <section id="tabContent-spending" class="space-y-6 hidden">
+      <!-- Top Actions Bar for Spending Tab -->
+      <div class="flex justify-end">
+        <button onclick="openStartNewMonthModal()" class="px-4 py-2 rounded-2xl bg-[#2D2A26] hover:bg-black text-[#FAF8F5] text-xs font-bold transition flex items-center gap-2 shadow-sm">
+          <span>📅</span>
+          <span>Start New Month</span>
+        </button>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div onclick="openAccountBalanceModal('checking')" class="bg-white border border-[#EFE9E1] rounded-3xl p-5 sm:p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:border-[#D6CEC5] transition cursor-pointer space-y-2">
           <div class="flex justify-between items-center text-xs text-[#8C827A]">
@@ -710,9 +718,9 @@
                 <span>Expected Annual Growth</span>
                 <span class="font-bold text-[#2D2A26] mono-num">7.0%</span>
               </div>
-              <div class="flex justify-between items-center">
+              <div class="flex justify-between">
                 <span>Projected Nest Egg</span>
-                <button onclick="openEditTargetAgeModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted decoration-[#D6CEC5] underline-offset-4 cursor-pointer" id="ltTrajNestEggDisplay">$2,534,810</button>
+                <button onclick="openEditTargetAgeModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted cursor-pointer" id="ltTrajNestEggDisplay">$2,534,810</button>
               </div>
               <div class="flex justify-between border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
                 <span>Projected Monthly Retirement Income</span>
@@ -720,7 +728,7 @@
               </div>
               <div class="flex justify-between items-center">
                 <span>Affordable Monthly Mortgage</span>
-                <button onclick="openHousingRuleModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted decoration-[#D6CEC5] underline-offset-4 cursor-pointer" id="ltAffordableMortgageDisplay">$2,366 / mo</button>
+                <button onclick="openHousingRuleModal()" class="font-bold text-[#2D2A26] hover:text-[#9E4D34] transition mono-num underline decoration-dotted cursor-pointer" id="ltAffordableMortgageDisplay">$2,366 / mo</button>
               </div>
               <div class="flex justify-between items-center border-t border-[#EFE9E1] pt-2 font-bold text-[#2D2A26]">
                 <span>Affordable House Price</span>
@@ -734,46 +742,78 @@
 
   </div>
 
-  <!-- MODAL: HOUSING RULE (28% RULE) -->
+  <!-- MODAL: START NEW MONTH -->
+  <div id="startNewMonthModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
+        <div>
+          <h3 class="font-bold text-base text-[#2D2A26]">Start New Month</h3>
+          <p class="text-xs text-[#8C827A] mt-0.5">Archive current spending &amp; reset counters</p>
+        </div>
+        <button onclick="closeStartNewMonthModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
+      </div>
+      
+      <p class="text-xs text-[#7A7169]">
+        This will file the current settled expenses and income into your <strong>History</strong> log and reset this month's spending and income to start fresh.
+      </p>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-[#8C827A] mb-1">Archive Under Month</label>
+          <select id="newMonthSelectMonth" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-xs font-semibold text-[#2D2A26] focus:outline-none">
+            <option value="Jan">January</option>
+            <option value="Feb">February</option>
+            <option value="Mar">March</option>
+            <option value="Apr">April</option>
+            <option value="May">May</option>
+            <option value="Jun">June</option>
+            <option value="Jul">July</option>
+            <option value="Aug">August</option>
+            <option value="Sep">September</option>
+            <option value="Oct">October</option>
+            <option value="Nov">November</option>
+            <option value="Dec">December</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-[#8C827A] mb-1">Archive Under Year</label>
+          <select id="newMonthSelectYear" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-xs font-semibold text-[#2D2A26] focus:outline-none">
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end gap-2 border-t border-[#F4EFEA]">
+        <button onclick="closeStartNewMonthModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Cancel</button>
+        <button onclick="confirmStartNewMonth()" class="bg-[#2D2A26] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-black transition">Archive &amp; Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: HOUSING BUDGET RULE -->
   <div id="housingRuleModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
       <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
         <div>
           <h3 class="font-bold text-base text-[#2D2A26]">Housing Budget Rule</h3>
-          <p class="text-xs text-[#8C827A] mt-0.5">Front-end housing rule guideline</p>
+          <p class="text-xs text-[#8C827A] mt-0.5">Max income percentage allocated to mortgage</p>
         </div>
         <button onclick="closeHousingRuleModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
       </div>
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block font-semibold text-[#8C827A] mb-1">Max Monthly Housing Ratio (%)</label>
-          <div class="relative">
-            <input type="number" step="0.5" min="5" max="60" id="housingRuleInput" value="28" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-sm font-bold text-[#2D2A26] focus:outline-none">
-            <span class="absolute right-3 top-2 text-[#8C827A] font-bold">%</span>
-          </div>
+      <div class="space-y-2 text-xs">
+        <label class="block font-semibold text-[#8C827A]">Housing Rule Percentage (%)</label>
+        <div class="relative">
+          <input type="number" id="housingRuleInput" min="5" max="50" step="1" value="28" class="w-full px-3 py-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-sm font-bold text-[#2D2A26] focus:outline-none">
+          <span class="absolute right-3 top-2 text-[#8C827A] font-bold">%</span>
         </div>
-        <div class="p-3 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl text-xs text-[#7A7169] leading-relaxed">
-          The <strong>28% rule</strong> is a standard lending benchmark stating that your monthly mortgage payment (principal, interest, taxes, and insurance) should not exceed 28% of your gross monthly retirement income.
-        </div>
+        <p class="text-[10px] text-[#A29990]">Standard guideline is 28% of monthly retirement income.</p>
       </div>
       <div class="pt-2 flex justify-end gap-2 border-t border-[#F4EFEA]">
         <button onclick="closeHousingRuleModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Cancel</button>
         <button onclick="saveHousingRule()" class="bg-[#2D2A26] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-black transition">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: CONFIRM RESET -->
-  <div id="resetConfirmModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white border border-[#EFE9E1] rounded-3xl p-6 w-full max-w-sm shadow-xl space-y-4">
-      <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
-        <h3 class="font-bold text-base text-[#2D2A26]">Reset Financial Suite</h3>
-        <button onclick="closeResetConfirmModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
-      </div>
-      <p class="text-xs text-[#7A7169]">Are you sure you want to reset all figures, categories, and targets back to default baseline values?</p>
-      <div class="pt-2 flex justify-end gap-2 border-t border-[#F4EFEA]">
-        <button onclick="closeResetConfirmModal()" class="px-4 py-1.5 rounded-xl text-xs font-semibold text-[#8C827A] hover:bg-[#FAF8F5]">Cancel</button>
-        <button onclick="confirmResetDefaults()" class="bg-[#9E4D34] text-white px-4 py-1.5 rounded-xl text-xs font-bold hover:bg-[#7e3a24] transition">Reset All</button>
       </div>
     </div>
   </div>
@@ -1347,7 +1387,7 @@
       <div class="flex justify-between items-center pb-2 border-b border-[#F4EFEA]">
         <div>
           <h3 class="font-bold text-base text-[#2D2A26]">Tax Assumptions</h3>
-          <p class="text-xs text-[#8C827A] mt-0.5">Used to calculate gross income</p>
+          <p class="text-xs text-[#8C827A] mt-0.5">Used to reverse engineer gross income</p>
         </div>
         <button onclick="closeTaxAssumptionsModal()" class="text-[#8C827A] hover:text-[#2D2A26] font-bold text-lg">&times;</button>
       </div>
@@ -1803,23 +1843,6 @@
       return maxLoan / loanRatio;
     }
 
-    function openHousingRuleModal() {
-      document.getElementById('housingRuleInput').value = housingRulePct;
-      document.getElementById('housingRuleModal').classList.remove('hidden');
-    }
-    function closeHousingRuleModal() {
-      document.getElementById('housingRuleModal').classList.add('hidden');
-    }
-    function saveHousingRule() {
-      const val = parseFloat(document.getElementById('housingRuleInput').value);
-      if (!isNaN(val) && val > 0 && val <= 100) {
-        housingRulePct = val;
-        recalcAll();
-        window.saveState();
-      }
-      closeHousingRuleModal();
-    }
-
     function recalcLongTermProjections() {
       const loanPrincipal = Math.max(0, dreamHomePrice * ((100 - dreamDownPaymentPct) / 100));
       const estMortgage = calculateMonthlyMortgage(loanPrincipal, nestEggAssumptions.mortgageRate);
@@ -1891,6 +1914,23 @@
         trajAffordableMortgage,
         trajAffordableHouse
       };
+    }
+
+    function openHousingRuleModal() {
+      document.getElementById('housingRuleInput').value = housingRulePct;
+      document.getElementById('housingRuleModal').classList.remove('hidden');
+    }
+    function closeHousingRuleModal() {
+      document.getElementById('housingRuleModal').classList.add('hidden');
+    }
+    function saveHousingRule() {
+      const val = parseFloat(document.getElementById('housingRuleInput').value);
+      if (!isNaN(val) && val > 0 && val <= 100) {
+        housingRulePct = val;
+        recalcAll();
+        window.saveState();
+      }
+      closeHousingRuleModal();
     }
 
     function recalcAll() {
@@ -2178,6 +2218,96 @@
         window.saveState();
       }
       closeEditHistoryModal();
+    }
+
+    /* START NEW MONTH WORKFLOW */
+    function openStartNewMonthModal() {
+      const now = new Date();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const currentMonth = monthNames[now.getMonth()];
+      const currentYear = now.getFullYear().toString();
+
+      const monthSelect = document.getElementById('newMonthSelectMonth');
+      const yearSelect = document.getElementById('newMonthSelectYear');
+      if (monthSelect) monthSelect.value = currentMonth;
+      if (yearSelect) {
+        if (!Array.from(yearSelect.options).some(o => o.value === currentYear)) {
+          const opt = document.createElement('option');
+          opt.value = currentYear;
+          opt.textContent = currentYear;
+          yearSelect.appendChild(opt);
+        }
+        yearSelect.value = currentYear;
+      }
+      document.getElementById('startNewMonthModal').classList.remove('hidden');
+    }
+
+    function closeStartNewMonthModal() {
+      document.getElementById('startNewMonthModal').classList.add('hidden');
+    }
+
+    function confirmStartNewMonth() {
+      const selMonth = document.getElementById('newMonthSelectMonth').value;
+      const selYear = document.getElementById('newMonthSelectYear').value;
+      const monthLabel = `${selMonth} ${selYear}`;
+      const monthId = `${selMonth.toLowerCase()}${selYear.slice(-2)}`;
+
+      // Calculate settled metrics for current month
+      const totalIncome = incomeLineItems
+        .filter(li => !li.isPending)
+        .reduce((sum, li) => sum + (Number(li.amount) || 0), 0);
+
+      const catsNeeds = expenseCategories.filter(c => c.group === 'Needs').map(c => c.id);
+      const catsWants = expenseCategories.filter(c => c.group === 'Wants').map(c => c.id);
+      const catsSavings = expenseCategories.filter(c => c.group === 'Savings').map(c => c.id);
+
+      const totalNeeds = lineItems
+        .filter(li => !li.isPending && catsNeeds.includes(li.categoryId))
+        .reduce((sum, li) => sum + (Number(li.amount) || 0), 0);
+
+      const totalWants = lineItems
+        .filter(li => !li.isPending && catsWants.includes(li.categoryId))
+        .reduce((sum, li) => sum + (Number(li.amount) || 0), 0);
+
+      const totalSavings = lineItems
+        .filter(li => !li.isPending && catsSavings.includes(li.categoryId))
+        .reduce((sum, li) => sum + (Number(li.amount) || 0), 0);
+
+      // Check if entry already exists in history
+      const existingIdx = historyMonths.findIndex(h => h.id === monthId || h.month === monthLabel);
+      const snapshot = {
+        id: monthId,
+        month: monthLabel,
+        income: parseFloat(totalIncome.toFixed(2)),
+        needs: parseFloat(totalNeeds.toFixed(2)),
+        wants: parseFloat(totalWants.toFixed(2)),
+        savings: parseFloat(totalSavings.toFixed(2))
+      };
+
+      if (existingIdx !== -1) {
+        historyMonths[existingIdx] = snapshot;
+      } else {
+        historyMonths.unshift(snapshot);
+      }
+
+      // Reset transactions and spent amounts for new month
+      lineItems = [];
+      incomeLineItems = [];
+      expenseCategories.forEach(c => c.spent = 0);
+      incomeBreakdown.forEach(i => i.earned = 0);
+
+      // Set starting balances for fresh month
+      const flow = recalcCashFlowBalances();
+      accountBalances.checkingStart = flow.checkingCurrent;
+      accountBalances.savingsStart = flow.savingsCurrent;
+
+      renderCategorizedExpenses();
+      renderIncomeTable();
+      renderHistoryTable();
+      recalcAll();
+      window.saveState();
+
+      closeStartNewMonthModal();
     }
 
     function toggleHistoryModule() {
@@ -3138,39 +3268,6 @@
         sendToGoogleSheet(payload);
       }, 350);
     };
-
-    function promptResetDefaults() {
-      document.getElementById('resetConfirmModal').classList.remove('hidden');
-    }
-
-    function closeResetConfirmModal() {
-      document.getElementById('resetConfirmModal').classList.add('hidden');
-    }
-
-    function confirmResetDefaults() {
-      closeResetConfirmModal();
-      currentAge = 25;
-      targetRetirementAge = 55;
-      currentCreditScore = 712;
-      currentGrossIncome = 130000;
-      appPinCode = "1234";
-      dreamHomePrice = 2500000;
-      dreamDownPaymentPct = 20;
-      housingRulePct = 28;
-      balanceAccounts = { hysa: 24200, brokerage: 19400, k401: 26500, roth: 0, hsa: 300 };
-      accountBalances = { checkingStart: 6000.00, savingsStart: 1500.00 };
-      monthlyCashBuckets = { emergency: 1000, car: 400, home: 600 };
-      goalTargets = { emergency: 36000, car: 30000, home: 500000 };
-      oneTimeContribution = { amount: 0, addMonthly: false };
-
-      document.getElementById('creditScoreDisplay').textContent = currentCreditScore;
-      document.getElementById('grossIncomeDisplay').textContent = `$${currentGrossIncome.toLocaleString()}`;
-      renderCategorizedExpenses();
-      renderIncomeTable();
-      renderHistoryTable();
-      recalcAll();
-      window.saveState();
-    }
 
     window.addEventListener('DOMContentLoaded', () => {
       try {
