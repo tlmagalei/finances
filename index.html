@@ -153,17 +153,19 @@
       </div>
 
       <!-- Navigation Tabs -->
-      <div class="flex items-center gap-1.5 pt-2 overflow-x-auto no-scrollbar" role="tablist">
+      <div id="mainTabBar" class="flex items-center gap-1.5 pt-2 overflow-x-auto no-scrollbar" role="tablist">
         <button onclick="switchTab('overview')" id="tabBtn-overview" class="tab-btn active px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition whitespace-nowrap">Personal Overview</button>
         <button onclick="switchTab('spending')" id="tabBtn-spending" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition whitespace-nowrap">Monthly Spending</button>
         <button onclick="switchTab('shortterm')" id="tabBtn-shortterm" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition whitespace-nowrap">Short-Term Planning</button>
         <button onclick="switchTab('longterm')" id="tabBtn-longterm" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition whitespace-nowrap">Long-Term Planning</button>
+        <button onclick="switchTab('goals')" id="tabBtn-goals" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition whitespace-nowrap">Financial Goals</button>
+        <button onclick="switchTab('misc')" id="tabBtn-misc" class="tab-btn px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition whitespace-nowrap">Miscellaneous</button>
       </div>
     </header>
 
     <!-- TAB 1: PERSONAL OVERVIEW -->
     <main id="tabContent-overview" class="space-y-6">
-      <div class="bg-[#EAF5ED] border border-[#CDE5D3] rounded-3xl p-6 sm:p-8 text-center shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+      <div onclick="openNetWorthHistory()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openNetWorthHistory()" class="bg-[#EAF5ED] border border-[#CDE5D3] rounded-3xl p-6 sm:p-8 text-center shadow-[0_2px_12px_rgba(0,0,0,0.02)] cursor-pointer">
         <div class="text-xs sm:text-sm font-extrabold tracking-wider text-[#2D6A4F] uppercase">Total Net Worth</div>
         <div class="text-4xl sm:text-5xl font-black text-[#1B4332] mt-2 mono-num" id="overviewNetWorthDisplay">$75,671</div>
       </div>
@@ -249,7 +251,7 @@
             </span>
             <span class="text-[#C5BDB5] group-hover:text-[#2D2A26] transition font-bold text-sm">→</span>
           </div>
-          <div class="text-3xl sm:text-4xl font-black text-[#2D2A26] mono-num" id="overviewRetContribDisplay">$2,100 / mo</div>
+          <div onclick="event.stopPropagation();openRetirementBreakdown()" class="text-3xl sm:text-4xl font-black text-[#2D2A26] mono-num cursor-pointer" id="overviewRetContribDisplay">$2,100 / mo</div>
           <div class="space-y-1.5 text-xs text-[#7A7169] border-t border-[#FAF5EF] pt-3">
             <div class="flex justify-between">
               <span>Employee 401(k) Contribution</span>
@@ -261,7 +263,7 @@
             </div>
             <div class="flex justify-between text-[#8C827A]">
               <button onclick="event.stopPropagation();openHsaContribution()">HSA</button>
-              <span class="font-bold text-[#7A7169] mono-num" id="subAnnualCombined">$25,200 / yr</span>
+              <button onclick="event.stopPropagation();openHsaContribution()" class="font-bold text-[#2D2A26] mono-num" id="subAnnualCombined">$25,200 / yr</span>
             </div>
 <div id="extraRetConLines" class="space-y-1 text-xs text-[#7A7169]"></div>
           </div>
@@ -764,7 +766,47 @@
       </div>
     </section>
 
+    <section id="tabContent-goals" class="space-y-5 hidden">
+      <div class="bg-white border border-[#EFE9E1] rounded-3xl p-5 sm:p-7 space-y-4">
+        <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Upcoming Goals</h2><button onclick="addFinancialGoal()" class="px-3 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">+ Add Goal</button></div>
+<div id="financialGoalList" class="space-y-3"></div>
+        <h3 class="font-bold text-sm">Suggested next steps (next 3 months)</h3><div id="financialGoalAdvice" class="text-xs text-[#7A7169] space-y-2"></div>
+      </div>
+      <div class="bg-white border border-[#EFE9E1] rounded-3xl p-5 sm:p-7 space-y-4" id="paycheckBreakdownModule">
+        <div class="flex flex-wrap justify-between items-center gap-3"><h2 class="text-lg font-bold">Paycheck Breakdown</h2><div class="flex items-center gap-2"><button type="button" onclick="resetPaycheckBaseline()" class="px-3 py-2 rounded-xl border border-[#EFE9E1] text-xs font-bold">Reset to Current</button><button type="button" onclick="updatePaycheckBaseline()" class="px-3 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Update Baseline</button></div></div>
+        <input id="paycheckTaxRate" type="hidden" value="24"><input id="paycheckOtherDeductions" type="hidden" value="0"><input id="paycheckPeriods" type="hidden" value="26">
+        <div id="paycheckBreakdownTable" class="overflow-x-auto"></div>
+
+      </div>
+      <div class="bg-white border border-[#EFE9E1] rounded-3xl p-5 sm:p-7 space-y-4">
+        <h2 class="text-lg font-bold">Estimated Federal Income Tax</h2>
+        <p class="text-xs text-[#8C827A]">Uses Personal Overview salary and 401(k) by default. A deduction lowers the income that is taxed; withholding is tax already paid through your paychecks. Federal estimate only; excludes state taxes, credits, payroll taxes, and special tax rules.</p>
+        <div class="flex flex-wrap gap-2 items-center text-xs"><label class="flex items-center gap-2"><input type="checkbox" id="taxScenario" onchange="toggleTaxScenario()"> Try a different scenario</label><button type="button" onclick="resetTaxScenario()" class="underline text-[#8C827A]">Use Personal Overview values</button></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <label>Filing status <span class="text-[#8C827A]">(how you file taxes)</span><select id="taxFiling" onchange="estimateGoalTax()" class="w-full mt-1 p-2 rounded-xl border border-[#EFE9E1]"><option value="single">Single</option><option value="joint">Married filing jointly</option></select></label>
+          <label>Annual salary ($) <span class="text-[#8C827A]">(from Personal Overview)</span><input id="taxSalary" type="number" min="0" oninput="estimateGoalTax()" class="w-full mt-1 p-2 rounded-xl border border-[#EFE9E1]"></label>
+          <label>401(k) employee contributions ($/year) <span class="text-[#8C827A]">(reduces taxable salary if traditional)</span><input id="taxPretax" type="number" min="0" oninput="estimateGoalTax()" class="w-full mt-1 p-2 rounded-xl border border-[#EFE9E1]"></label>
+          <label>Tax deduction ($) <span class="text-[#8C827A]">(income the IRS doesn't tax; standard deduction is filled in)</span><input id="taxDeduction" type="number" min="0" oninput="estimateGoalTax()" class="w-full mt-1 p-2 rounded-xl border border-[#EFE9E1]"></label>
+          <label>Federal income tax withheld ($/year) <span class="text-[#8C827A]">(tax already taken from your paychecks; enter from paystub/W-2)</span><input id="taxWithheld" type="number" min="0" oninput="estimateGoalTax()" class="w-full mt-1 p-2 rounded-xl border border-[#EFE9E1]"></label>
+          <label>Other taxable income ($) <span class="text-[#8C827A]">(interest, side income, etc.)</span><input id="taxOther" type="number" oninput="estimateGoalTax()" class="w-full mt-1 p-2 rounded-xl border border-[#EFE9E1]"></label>
+                </div><div id="taxEstimateResult" class="text-sm font-bold"></div><div id="taxGoalAdvice" class="text-xs text-[#7A7169]"></div>
+        <button onclick="saveGoalTaxInputs()" class="bg-[#2D2A26] text-white px-4 py-2 rounded-xl text-xs font-bold">Save Tax Inputs</button>
+      </div>
+    </section>
+    <section id="tabContent-misc" class="space-y-5 hidden">
+      <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Miscellaneous</h2><button onclick="addMiscModule()" class="bg-[#2D2A26] text-white px-4 py-2 rounded-xl text-xs font-bold">+ Add Module</button></div>
+      <div class="bg-white border border-[#EFE9E1] rounded-3xl p-5 space-y-4">
+        <div class="flex items-center justify-between gap-3"><h3 class="font-bold">Quick Links</h3><button onclick="addQuickLink()" class="bg-[#2D2A26] text-white px-4 py-2 rounded-xl text-xs font-bold">+ Add New Quick Link</button></div>
+        <div id="quickLinksList" class="space-y-4"></div>
+      </div>
+      <div id="miscModules" class="space-y-4"></div>
+    </section>
+
   </div>
+
+
+  <div id="netWorthHistoryModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] hidden p-4 flex items-center justify-center"><div class="bg-white rounded-3xl p-5 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-3"><div class="flex justify-between items-center"><h3 class="font-bold">Net Worth History</h3><button onclick="closeNewModal('netWorthHistoryModal')" class="text-xl">×</button></div><p class="text-xs text-[#8C827A]">Snapshots are saved when your balances change. Earlier historical balances cannot be reconstructed automatically.</p><div class="flex gap-2 text-xs"><button onclick="setNetWorthRange(3)" class="p-2 border rounded-xl">3M</button><button onclick="setNetWorthRange(6)" class="p-2 border rounded-xl">6M</button><button onclick="setNetWorthRange(12)" class="p-2 border rounded-xl">1Y</button><button onclick="setNetWorthRange(0)" class="p-2 border rounded-xl">All</button></div><svg id="netWorthHistoryChart" viewBox="0 0 600 220" class="w-full bg-[#FAF8F5] rounded-xl" aria-label="Net worth history chart"></svg><div id="netWorthHistoryDetails" class="text-xs text-[#7A7169]"></div></div></div>
+  <div id="retirementBreakdownModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] hidden p-4 flex items-center justify-center"><div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3"><div class="flex justify-between"><h3 class="font-bold">Monthly Retirement Contributions</h3><button onclick="closeNewModal('retirementBreakdownModal')" class="text-xl">×</button></div><div id="retirementBreakdownLines" class="text-xs space-y-3"></div><button onclick="closeNewModal('retirementBreakdownModal');open401kModal()" class="text-xs font-bold underline">Edit 401(k)</button><button onclick="closeNewModal('retirementBreakdownModal');openRothContribution()" class="text-xs font-bold underline ml-3">Edit Roth IRA</button><button onclick="closeNewModal('retirementBreakdownModal');openHsaContribution()" class="text-xs font-bold underline ml-3">Edit HSA</button></div></div>
 
   <!-- MODAL: TRANSFER BETWEEN CHECKING & SAVINGS -->
   <div id="transferModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
@@ -1954,7 +1996,7 @@
     }
 
     function switchTab(tabKey) {
-      ['overview', 'spending', 'shortterm', 'longterm'].forEach(k => {
+      ['overview', 'spending', 'shortterm', 'longterm', 'goals', 'misc'].forEach(k => {
         const btn = document.getElementById('tabBtn-' + k);
         const section = document.getElementById('tabContent-' + k);
         if (btn && section) {
@@ -1967,7 +2009,21 @@
           }
         }
       });
+      // Keep the selected tab visible, centered where space permits.
+      const selected = document.getElementById('tabBtn-' + tabKey);
+      const bar = document.getElementById('mainTabBar');
+      if (selected && bar) {
+        const target = selected.offsetLeft - bar.offsetLeft - (bar.clientWidth - selected.offsetWidth) / 2;
+        bar.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+      }
     }
+
+    // On desktop, scrolling the mouse wheel over the tab strip moves it sideways.
+    document.getElementById('mainTabBar')?.addEventListener('wheel', function(event) {
+      if (this.scrollWidth <= this.clientWidth || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      event.preventDefault();
+      this.scrollLeft += event.deltaY;
+    }, { passive: false });
 
     /* TRANSFER BETWEEN CHECKING & SAVINGS */
     function openTransferModal() {
@@ -2423,6 +2479,8 @@
       recalcLongTermProjections();
       renderAssetAllocationDonut(combinedLiquid, balanceAccounts.hysa, balanceAccounts.brokerage, balanceAccounts.k401, balanceAccounts.roth, balanceAccounts.hsa);
       refreshExtras();
+      recordNetWorthSnapshot();
+      renderFinancialGoals();
       renderShortFunds();
     }
 
@@ -2473,6 +2531,16 @@
     function renderCategorizedExpenses() {
       let grandSpent = 0;
       let grandProjected = 0;
+      let grandCommitted = 0;
+
+      // A category's remainder includes pending expenses as committed funds.
+      // Pending items never affect the checking/savings balances or the settled Spent column.
+      const pendingByCategory = new Map();
+      lineItems.forEach(item => {
+        if (!item.isPending) return;
+        const id = item.categoryId;
+        pendingByCategory.set(id, (pendingByCategory.get(id) || 0) + (Number(item.amount) || 0));
+      });
 
       ['needs', 'wants', 'savings'].forEach(groupKey => {
         const tbody = document.getElementById(groupKey + 'TableBody');
@@ -2485,7 +2553,9 @@
         tbody.innerHTML = cats.map(cat => {
           groupSpent += cat.spent;
           groupProjected += cat.projected;
-          const remainder = Math.max(0, cat.projected - cat.spent);
+          const committed = (Number(cat.spent) || 0) + (pendingByCategory.get(cat.id) || 0);
+          grandCommitted += committed;
+          const remainder = Math.max(0, cat.projected - committed);
 
           return `
             <tr class="hover:bg-[#FAF8F5] transition">
@@ -2522,7 +2592,7 @@
 
       if (grandSpentEl) grandSpentEl.textContent = `$${grandSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       if (grandProjEl) grandProjEl.textContent = `$${grandProjected.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      if (grandRemEl) grandRemEl.textContent = `$${Math.max(0, grandProjected - grandSpent).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (grandRemEl) grandRemEl.textContent = `$${Math.max(0, grandProjected - grandCommitted).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
       if (grandSpent > 0) {
         ['needs', 'wants', 'savings'].forEach(gk => {
@@ -3055,7 +3125,7 @@
     }
 
     let addedAccounts={cash:[],ret:[]},addedContributions={cash:[],ret:[]};
-    let rothMonthly=0,hsaPaycheck=0,hsaEmployer=0,hsaEmployerMode='annual';
+    let rothMonthly=0,hsaPaycheck=0,hsaEmployer=0,hsaEmployerMode='annual',hsaPersonalMode='monthly';
     const extraMoney=n=>'$'+Math.round(n).toLocaleString('en-US');
     function addExtra(kind,type) {const name=prompt(type==='account'?'Account name:':'Contribution type name:');if(!name||!name.trim())return;const amount=Number(prompt('Amount ($):'));if(!Number.isFinite(amount)||amount<0)return;const list=type==='account'?addedAccounts:addedContributions;list[kind].push({name:name.trim(),amount});recalcAll();window.saveState();}
     function ensureExtraButtons(){[['cashReservesModal','cash','account'],['retirementFundModal','ret','account'],['cashContribModal','cash','contribution'],['ret401kModal','ret','contribution']].forEach(([id,k,type])=>{const modal=document.getElementById(id);if(!modal||modal.querySelector('.extra-add-button'))return;const btn=document.createElement('button');btn.className='extra-add-button px-3 py-2 rounded-xl bg-[#FAF8F5] border border-[#EFE9E1] text-xs font-bold';btn.textContent=type==='account'?'Add Account':'Add Contribution Type';btn.onclick=()=>addExtra(k,type);modal.querySelector('.space-y-4')?.appendChild(btn);});}
@@ -3072,7 +3142,7 @@
       const nw=cash+ret;['headerNetWorthDisplay','overviewNetWorthDisplay','donutCenterNetWorth'].forEach(id=>document.getElementById(id).textContent=extraMoney(nw));
       const cc=monthlyCashBuckets.emergency+monthlyCashBuckets.car+monthlyCashBuckets.home+sum(addedContributions.cash);
       ['overviewCashContribDisplay','stMonthlyContribRef'].forEach(id=>document.getElementById(id).textContent=extraMoney(cc)+' / mo');
-      const monthlyHsa=hsaPaycheck*2+hsaEmployer/(hsaEmployerMode==='annual'?12:1);
+      const monthlyHsa=hsaPaycheck/(hsaPersonalMode==='annual'?12:1)+hsaEmployer/(hsaEmployerMode==='annual'?12:1);
       const base=recalc401kContributions().monthlyTotal;
       const total=base+rothMonthly+monthlyHsa+sum(addedContributions.ret);
       ['overviewRetContribDisplay','ltMonthlyContribRef','ltRealityContribDisplay'].forEach(id=>document.getElementById(id).textContent=extraMoney(total)+' / mo');
@@ -3092,10 +3162,13 @@
       contributionDialog('Roth IRA','<p class="text-[11px] text-[#8C827A]">2026 IRS IRA contribution limit: $7,500 (under age 50; eligibility and income limits apply).</p><label class="block text-xs text-[#8C827A] font-semibold mt-3">Monthly Roth IRA Contribution ($)</label><input id="customRoth" type="number" min="0" step="0.01" class="w-full px-3 py-2 mt-1 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl" value="'+rothMonthly+'">',w=>{let n=Number(w.querySelector('#customRoth').value);if(!Number.isFinite(n)||n<0)return false;rothMonthly=n});
     }
     function openHsaContribution(){
-      contributionDialog('HSA','<p class="text-[11px] text-[#8C827A]">2026 IRS HSA contribution limits: $4,400 self-only / $8,750 family (subject to eligibility).</p><label class="block text-xs text-[#8C827A] font-semibold mt-3">Personal (Paycheck) Contribution ($)</label><input id="customPay" type="number" min="0" step="0.01" class="w-full px-3 py-2 mt-1 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl" value="'+hsaPaycheck+'"><p class="text-[11px] text-[#8C827A] mt-1">Per paycheck × 2 = monthly contribution</p><label class="block text-xs text-[#8C827A] font-semibold mt-3">Employer Contribution</label><select id="customMode" class="w-full px-3 py-2 mt-1 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl"><option value="annual">Annual Contribution</option><option value="monthly">Monthly Contribution</option></select><input id="customEmployer" type="number" min="0" step="0.01" class="w-full px-3 py-2 mt-2 bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl" value="'+hsaEmployer+'"><p id="customHsaMonthly" class="text-xs text-[#8C827A] mt-2"></p>',w=>{let p=Number(w.querySelector('#customPay').value),e=Number(w.querySelector('#customEmployer').value);if(!Number.isFinite(p)||!Number.isFinite(e)||p<0||e<0)return false;hsaPaycheck=p;hsaEmployer=e;hsaEmployerMode=w.querySelector('#customMode').value});
-      const w=document.getElementById('customContributionDialog');w.querySelector('#customMode').value=hsaEmployerMode;
-      const update=()=>{let p=Number(w.querySelector('#customPay').value)||0,e=Number(w.querySelector('#customEmployer').value)||0;w.querySelector('#customHsaMonthly').textContent='Monthly HSA contribution: '+extraMoney(p*2+e/(w.querySelector('#customMode').value==='annual'?12:1))};
-      ['#customPay','#customEmployer','#customMode'].forEach(id=>w.querySelector(id).addEventListener('input',update));update();
+      const fields=`<p class="text-[11px] text-[#8C827A]">2026 IRS HSA contribution limits: $4,400 self-only / $8,750 family. Employer and personal contributions count together; eligibility restrictions apply.</p>
+        <label class="block text-xs font-semibold mt-3">Personal Paycheck Contribution ($)</label><select id="customPersonalMode" class="w-full p-2 mt-1 border rounded-xl"><option value="monthly">Monthly (default)</option><option value="annual">Annual</option></select><input id="customPay" type="number" min="0" step="0.01" class="w-full p-2 mt-1 border rounded-xl" value="${hsaPaycheck}">
+        <label class="block text-xs font-semibold mt-3">Employer Contribution ($)</label><select id="customMode" class="w-full p-2 mt-1 border rounded-xl"><option value="annual">Annual (default)</option><option value="monthly">Monthly</option></select><input id="customEmployer" type="number" min="0" step="0.01" class="w-full p-2 mt-1 border rounded-xl" value="${hsaEmployer}"><p id="customHsaMonthly" class="text-xs mt-2 text-[#8C827A]"></p>`;
+      contributionDialog('HSA',fields,w=>{let p=Number(w.querySelector('#customPay').value),e=Number(w.querySelector('#customEmployer').value);if(!Number.isFinite(p)||!Number.isFinite(e)||p<0||e<0)return false;hsaPaycheck=p;hsaEmployer=e;hsaPersonalMode=w.querySelector('#customPersonalMode').value;hsaEmployerMode=w.querySelector('#customMode').value});
+      const w=document.getElementById('customContributionDialog');w.querySelector('#customMode').value=hsaEmployerMode;w.querySelector('#customPersonalMode').value=hsaPersonalMode;
+      const update=()=>{const p=Number(w.querySelector('#customPay').value)||0,e=Number(w.querySelector('#customEmployer').value)||0;w.querySelector('#customHsaMonthly').textContent='Monthly HSA contribution: '+extraMoney(p/(w.querySelector('#customPersonalMode').value==='annual'?12:1)+e/(w.querySelector('#customMode').value==='annual'?12:1))};
+      ['#customPay','#customEmployer','#customMode','#customPersonalMode'].forEach(id=>w.querySelector(id).addEventListener('input',update));update();
     }
     function openCashReservesModal() {
       document.getElementById('inputCashReservesHysa').value = balanceAccounts.hysa;
@@ -3397,7 +3470,7 @@
             <div class="flex items-center gap-2 flex-1 cursor-pointer" onclick="openEditTransactionItem(${item.id})">
               <input type="checkbox" ${!item.isPending ? 'checked' : ''} onclick="event.stopPropagation(); toggleItemPending(${item.id})" class="rounded text-[#2D2A26] focus:ring-0">
               <div class="flex flex-col">
-                <span class="font-medium text-[#2D2A26] ${item.isPending ? 'opacity-50 line-through' : ''}">${item.note || 'No Description'}</span>
+                <span class="font-medium text-[#2D2A26] ">${item.note || 'No Description'}</span>
                 ${dateStr}
               </div>
               ${item.isPending ? '<span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold ml-1">Pending</span>' : ''}
@@ -3921,7 +3994,7 @@
         ret401kSettings,
         monthlyCashBuckets,
         goalTargets,
-        oneTimeContribution,shortFunds,shortFundOrder,carFundBalance,addedAccounts,addedContributions,rothMonthly,hsaPaycheck,hsaEmployer,hsaEmployerMode
+        oneTimeContribution,shortFunds,shortFundOrder,carFundBalance,addedAccounts,addedContributions,rothMonthly,hsaPaycheck,hsaEmployer,hsaEmployerMode,hsaPersonalMode,financialGoals,miscModuleData,quickLinksData,taxGoalInputs,netWorthSnapshots
       };
     }
 
@@ -3968,7 +4041,7 @@
       if(Array.isArray(data.shortFundOrder))shortFundOrder=data.shortFundOrder;
       if(typeof data.carFundBalance==='number')carFundBalance=data.carFundBalance;
       if(data.addedAccounts)addedAccounts=data.addedAccounts;if(data.addedContributions)addedContributions=data.addedContributions;
-      if(typeof data.rothMonthly==='number')rothMonthly=data.rothMonthly;if(typeof data.hsaPaycheck==='number')hsaPaycheck=data.hsaPaycheck;if(typeof data.hsaEmployer==='number')hsaEmployer=data.hsaEmployer;if(data.hsaEmployerMode)hsaEmployerMode=data.hsaEmployerMode;
+      if(typeof data.rothMonthly==='number')rothMonthly=data.rothMonthly;if(typeof data.hsaPaycheck==='number')hsaPaycheck=data.hsaPaycheck;if(typeof data.hsaEmployer==='number')hsaEmployer=data.hsaEmployer;if(data.hsaEmployerMode)hsaEmployerMode=data.hsaEmployerMode;if(data.hsaPersonalMode)hsaPersonalMode=data.hsaPersonalMode;if(Array.isArray(data.financialGoals))financialGoals=data.financialGoals;if(Array.isArray(data.miscModuleData))miscModuleData=data.miscModuleData;if(Array.isArray(data.quickLinksData))quickLinksData=data.quickLinksData;if(data.taxGoalInputs)taxGoalInputs=data.taxGoalInputs;if(Array.isArray(data.netWorthSnapshots))netWorthSnapshots=data.netWorthSnapshots;renderFinancialGoals();renderMiscModules();renderQuickLinks();loadGoalTaxInputs();
     }
 
     function triggerSaveBadge() {
@@ -4066,6 +4139,7 @@
 
     let sheetSaveTimeout = null;
     window.saveState = function() {
+      if(window.__undoReady&&!window.__undoRestoring){try{const before=window.__undoPrevious;if(before){const after=JSON.stringify(collectCurrentState());if(after!==before){(window.__undoStack||(window.__undoStack=[])).push(before);if(window.__undoStack.length>30)window.__undoStack.shift();window.__undoPrevious=after;}}}catch(e){console.warn('Undo snapshot',e)}}
       triggerSaveBadge();
       const payload = collectCurrentState();
       
@@ -4097,7 +4171,336 @@
       saveButton.click();
     });
 
+    window.undoLastChange=function(){const stack=window.__undoStack||[];if(!stack.length)return;const snapshot=stack.pop();window.__undoRestoring=true;try{applyLoadedState(JSON.parse(snapshot));if(typeof recalcAll==='function')recalcAll();if(typeof loadGoalTaxInputs==='function')loadGoalTaxInputs();if(typeof renderFinancialGoals==='function')renderFinancialGoals();window.__undoPrevious=JSON.stringify(collectCurrentState());window.saveState()}finally{window.__undoRestoring=false}};
+    document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'&&!e.target.closest('input,textarea,[contenteditable="true"]')){e.preventDefault();window.undoLastChange()}});
+    let undoPressTimer=null;document.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;clearTimeout(undoPressTimer);undoPressTimer=setTimeout(()=>{if(document.getElementById('undoMobileButton'))return;const b=document.createElement('button');b.id='undoMobileButton';b.textContent='Undo last change';b.className='fixed bottom-6 left-1/2 -translate-x-1/2 z-[150] bg-[#2D2A26] text-white rounded-xl px-5 py-3 shadow-xl text-sm font-bold';b.onclick=()=>{window.undoLastChange();b.remove()};document.body.appendChild(b)},5000)},{passive:true});['touchend','touchcancel','touchmove'].forEach(type=>document.addEventListener(type,()=>clearTimeout(undoPressTimer),{passive:true}));
+    window.addEventListener('load',()=>setTimeout(()=>{window.__undoPrevious=JSON.stringify(collectCurrentState());window.__undoReady=true},1800));
+    // Optional planning tools: stored with the existing dashboard state.
+    let financialGoals=[],miscModuleData=[{id:'simulator',type:'simulator',name:'What-If Financial Simulator'}],taxGoalInputs={},netWorthSnapshots=[],netWorthRange=0;
+    const safePlanText=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const planMoney=n=>'$'+Number(n||0).toLocaleString('en-US',{maximumFractionDigits:0});
+    function closeNewModal(id){document.getElementById(id)?.classList.add('hidden')}
+    function currentNetWorthValue(){const b=recalcCashFlowBalances();return b.checkingCurrent+b.savingsCurrent+Object.values(balanceAccounts).reduce((sum,v)=>sum+(Number(v)||0),0)+[...addedAccounts.cash,...addedAccounts.ret].reduce((sum,v)=>sum+(Number(v.amount)||0),0)}
+    function recordNetWorthSnapshot(){const amount=currentNetWorthValue(),today=new Date().toISOString().slice(0,10);if(!Number.isFinite(amount))return;const last=netWorthSnapshots[netWorthSnapshots.length-1];if(last?.date===today){last.value=amount}else{netWorthSnapshots.push({date:today,value:amount})}netWorthSnapshots=netWorthSnapshots.slice(-1200)}
+    function openNetWorthHistory(){recordNetWorthSnapshot();document.getElementById('netWorthHistoryModal').classList.remove('hidden');renderNetWorthHistory()}
+    function setNetWorthRange(n){netWorthRange=n;renderNetWorthHistory()}
+    function renderNetWorthHistory(){const svg=document.getElementById('netWorthHistoryChart');if(!svg)return;let points=netWorthSnapshots.filter(x=>x&&Number.isFinite(Number(x.value)));if(netWorthRange){const cutoff=new Date();cutoff.setMonth(cutoff.getMonth()-netWorthRange);points=points.filter(x=>new Date(x.date)>=cutoff)}const details=document.getElementById('netWorthHistoryDetails');if(!points.length){svg.innerHTML='';details.textContent='No snapshots in this date range yet.';return}const values=points.map(x=>Number(x.value)),min=Math.min(...values),max=Math.max(...values),span=Math.max(1,max-min),w=560,h=170;const xy=points.map((x,i)=>[20+(points.length===1?.5:i/(points.length-1))*w,195-(Number(x.value)-min)/span*h]);svg.innerHTML='<line x1="20" y1="195" x2="580" y2="195" stroke="#D6CEC5"/><polyline fill="none" stroke="#2D6A4F" stroke-width="3" points="'+xy.map(p=>p.join(',')).join(' ')+'"/>'+xy.map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="#2D6A4F"/>').join('');details.textContent=points.length+' recorded date(s) • '+points[0].date+': '+planMoney(values[0])+' → '+points[points.length-1].date+': '+planMoney(values[values.length-1])}
+    function openRetirementBreakdown(){const annualEmployee=ret401kSettings.mode==='pct'?currentGrossIncome*(Number(ret401kSettings.pctVal)||0)/100:Number(ret401kSettings.dollarVal)||0;const annualMatch=Math.min(annualEmployee,24500)*(Number(ret401kSettings.matchPct)||0)/100;const personal=hsaPaycheck/(hsaPersonalMode==='annual'?12:1),employer=hsaEmployer/(hsaEmployerMode==='annual'?12:1);const entries=[['Employee 401(k)',annualEmployee/12],['Employer 401(k) Match',annualMatch/12],['Roth IRA',rothMonthly],['HSA — Personal',personal],['HSA — Employer',employer],...addedContributions.ret.map(x=>[x.name,Number(x.amount)||0])];const total=entries.reduce((t,x)=>t+x[1],0);document.getElementById('retirementBreakdownLines').innerHTML=entries.map(([name,value])=>'<div class="flex justify-between gap-2"><span>'+safePlanText(name)+'</span><strong>'+planMoney(value)+' / mo</strong></div>').join('')+'<div class="flex justify-between border-t pt-2 font-bold"><span>Total</span><span>'+planMoney(total)+' / mo</span></div>';document.getElementById('retirementBreakdownModal').classList.remove('hidden')}
+    const guidedGoalTypes={
+      'Emergency fund':{questions:[['Monthly essential expenses ($)','2500'],['Months of expenses to cover','6']],calc:a=>a[0]*a[1]},
+      'Wedding':{questions:[['Number of guests','100'],['Estimated cost per guest ($)','150'],['Venue and fixed costs ($)','6000'],['Other costs (attire, photos, etc.) ($)','4000']],calc:a=>a[0]*a[1]+a[2]+a[3]},
+      'Home down payment':{questions:[['Expected home price ($)','500000'],['Down payment percentage','20'],['Closing costs and moving budget ($)','15000']],calc:a=>a[0]*a[1]/100+a[2]},
+      'Car':{questions:[['Car purchase price ($)','30000'],['Taxes, fees and initial costs ($)','3000']],calc:a=>a[0]+a[1]},
+      'Travel':{questions:[['Travelers','2'],['Transportation per person ($)','700'],['Lodging total ($)','1200'],['Food and activities total ($)','800']],calc:a=>a[0]*a[1]+a[2]+a[3]},
+      'Education':{questions:[['Tuition and fees ($)','10000'],['Books, supplies and other costs ($)','1500']],calc:a=>a[0]+a[1]},
+      'Debt payoff':{questions:[['Current debt balance ($)','5000'],['Estimated interest and fees until payoff ($)','300']],calc:a=>a[0]+a[1]},
+      'Retirement':{questions:[['Target retirement savings ($)','1000000'],['Existing retirement savings to count ($)','0']],calc:a=>Math.max(0,a[0]-a[1])}
+    };
+    function goalEditor(id=null,withRecommendation=false){
+      const goal=financialGoals.find(x=>String(x.id)===String(id));let m=document.getElementById('financialGoalEditorModal');if(!m){m=document.createElement('div');m.id='financialGoalEditorModal';m.className='fixed inset-0 z-[120] bg-black/40 flex items-center justify-center p-4 hidden';m.innerHTML=`<div class="bg-white rounded-3xl p-6 sm:p-7 w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-4 shadow-xl" role="dialog" aria-modal="true"><div class="flex justify-between items-center"><h3 class="text-lg font-extrabold" id="goalEditorTitle">Financial Goal</h3><button type="button" onclick="document.getElementById('financialGoalEditorModal').classList.add('hidden')" class="text-xl text-[#8C827A]">×</button></div><p class="text-xs text-[#8C827A]">Set a realistic goal and timeline. You can adjust the recommendation before saving.</p><label class="block text-xs font-semibold">Goal name<input id="goalEditName" list="goalEditSuggestions" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]" placeholder="e.g. Travel or home down payment"><datalist id="goalEditSuggestions"><option value="Travel"><option value="Wedding"><option value="Home down payment"><option value="Car"><option value="Education"><option value="Emergency fund"></datalist></label><div class="grid grid-cols-2 gap-3"><label class="block text-xs font-semibold">Goal amount<input id="goalEditTarget" type="number" min="0" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]"></label><label class="block text-xs font-semibold">Already saved<input id="goalEditSaved" type="number" min="0" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]"></label><label class="block text-xs font-semibold col-span-2">Timeline<div class="flex gap-2 mt-1"><input id="goalEditMonths" type="number" min="1" oninput="goalUpdateAdvice()" class="w-full min-w-0 p-3 rounded-xl border border-[#EFE9E1] bg-[#FAF8F5]"><div class="relative shrink-0"><select id="goalEditTimelineUnit" onchange="goalUpdateAdvice()" class="appearance-none bg-[#FAF8F5] border border-[#EFE9E1] rounded-xl pl-4 pr-10 py-3 text-sm font-semibold text-[#2D2A26] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#C7B9A8]"><option value="months">Months</option><option value="years">Years</option></select><svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8C827A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div></div></label></div><button type="button" onclick="goalShowRecommendation()" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Get Recommendation</button><div id="goalRecommendationQuestions" class="space-y-3"></div><div id="goalEditorAdvice" class="text-xs text-[#7A7169]"></div><div class="flex justify-end gap-2"><button type="button" onclick="document.getElementById('financialGoalEditorModal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-[#EFE9E1] text-xs font-bold">Cancel</button><button type="button" onclick="goalSaveEditor()" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Save Goal</button></div></div>`;document.body.appendChild(m)}
+      m.dataset.goalId=goal?goal.id:'';m.querySelector('#goalEditorTitle').textContent=goal?'Edit Financial Goal':'Add Financial Goal';m.querySelector('#goalEditName').value=goal?.name||'';m.querySelector('#goalEditTarget').value=goal?.target||'';m.querySelector('#goalEditSaved').value=goal?.saved||0;const goalMonths=goal?.months||12;m.querySelector('#goalEditTimelineUnit').value=goalMonths>=12&&goalMonths%12===0?'years':'months';m.querySelector('#goalEditMonths').value=m.querySelector('#goalEditTimelineUnit').value==='years'?goalMonths/12:goalMonths;m.querySelector('#goalRecommendationQuestions').innerHTML='';m.querySelector('#goalEditorAdvice').textContent='';m.classList.remove('hidden');if(withRecommendation)goalShowRecommendation();
+    }
+    function addFinancialGoal(){goalEditor()}
+    function editFinancialGoal(id){goalEditor(id)}
+    function getGoalRecommendation(id){goalEditor(id,true)}
+    function goalShowRecommendation(){const m=document.getElementById('financialGoalEditorModal'),name=m.querySelector('#goalEditName').value.trim();if(!name){m.querySelector('#goalEditorAdvice').textContent='Enter a goal name first.';return}const key=Object.keys(guidedGoalTypes).find(x=>x.toLowerCase()===name.toLowerCase());const t=guidedGoalTypes[key];const target=m.querySelector('#goalRecommendationQuestions');if(!t){target.innerHTML='<p class="text-xs text-[#8C827A]">For a custom goal, enter the total cost, any amount already saved, and the months available. Aim for a monthly contribution that fits your budget.</p>';goalUpdateAdvice();return}target.innerHTML='<p class="text-xs font-semibold">A few questions to estimate '+safePlanText(name)+':</p>'+t.questions.map(([label,def],i)=>'<label class="block text-xs font-semibold">'+safePlanText(label)+'<input type="number" min="0" step="any" data-goal-answer="'+i+'" value="'+safePlanText(def)+'" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]"></label>').join('')+'<button type="button" onclick="goalCalculateRecommendation()" class="px-4 py-2 rounded-xl border border-[#EFE9E1] text-xs font-bold">Calculate Suggested Amount</button>';goalUpdateAdvice()}
+    function goalCalculateRecommendation(){const m=document.getElementById('financialGoalEditorModal'),key=Object.keys(guidedGoalTypes).find(x=>x.toLowerCase()===m.querySelector('#goalEditName').value.trim().toLowerCase()),t=guidedGoalTypes[key];if(!t)return;const a=Array.from(m.querySelectorAll('[data-goal-answer]')).map(x=>Number(x.value));if(a.some(x=>!Number.isFinite(x)||x<0)){m.querySelector('#goalEditorAdvice').textContent='Enter valid amounts in all questions.';return}m.querySelector('#goalEditTarget').value=Math.ceil(t.calc(a)*1.1);goalUpdateAdvice('Includes a 10% contingency buffer. Adjust to match actual quotes and your priorities.')}
+    function goalUpdateAdvice(note=''){const m=document.getElementById('financialGoalEditorModal');const target=Number(m.querySelector('#goalEditTarget').value)||0,saved=Number(m.querySelector('#goalEditSaved').value)||0,months=Math.max(1,(Number(m.querySelector('#goalEditMonths').value)||12)*(m.querySelector('#goalEditTimelineUnit').value==='years'?12:1));m.querySelector('#goalEditorAdvice').textContent=(note?note+' ':'')+'Estimated monthly savings needed: '+planMoney(Math.max(0,target-saved)/months)+'. Keep essential expenses and emergency reserves funded first; estimates are planning guides, not guaranteed prices.'}
+    function goalSaveEditor(){const m=document.getElementById('financialGoalEditorModal'),name=m.querySelector('#goalEditName').value.trim(),target=Number(m.querySelector('#goalEditTarget').value),saved=Number(m.querySelector('#goalEditSaved').value),months=Number(m.querySelector('#goalEditMonths').value)*(m.querySelector('#goalEditTimelineUnit').value==='years'?12:1);if(!name||![target,saved,months].every(Number.isFinite)||target<0||saved<0||!Number.isInteger(months)||months<1){m.querySelector('#goalEditorAdvice').textContent='Enter a goal name, valid amounts, and a timeline of at least one month.';return}let g=financialGoals.find(x=>String(x.id)===m.dataset.goalId);if(g)Object.assign(g,{name,target,saved,months});else financialGoals.push({id:Date.now(),name,target,saved,months});m.classList.add('hidden');renderFinancialGoals();window.saveState()}
+    function removeFinancialGoal(id){if(!confirm('Remove this financial goal?'))return;financialGoals=financialGoals.filter(x=>x.id!==id);renderFinancialGoals();window.saveState()}
+    function renderFinancialGoals(){const el=document.getElementById('financialGoalList'),advice=document.getElementById('financialGoalAdvice');if(!el||!advice)return;el.innerHTML=financialGoals.length?financialGoals.map(g=>'<div class="p-3 rounded-xl border border-[#EFE9E1]"><div class="flex justify-between gap-2"><strong class="text-sm">'+safePlanText(g.name)+'</strong><div class="flex gap-2"><button class="text-xs underline" onclick="getGoalRecommendation('+g.id+')">Get Recommendation</button><button class="text-xs underline" onclick="editFinancialGoal('+g.id+')">Edit</button><button class="text-xs underline" onclick="removeFinancialGoal('+g.id+')">Remove</button></div></div><div class="text-xs text-[#8C827A] mt-2">'+planMoney(g.saved)+' / '+planMoney(g.target)+' saved • '+Math.round(Math.min(100,g.target?g.saved/g.target*100:100))+'% • '+planMoney(Math.max(0,g.target-g.saved)/g.months)+'/mo needed over '+g.months+' months</div></div>').join(''):'<p class="text-xs text-[#8C827A]">Add a goal to see a prioritized action plan.</p>';const ranked=[...financialGoals].sort((a,b)=>a.months-b.months);advice.innerHTML=ranked.length?ranked.slice(0,3).map((g,i)=>'<p><strong>Month '+(i+1)+' focus — '+safePlanText(g.name)+':</strong> Aim for '+planMoney(Math.max(0,g.target-g.saved)/g.months)+'/month. Review your checking cash cushion and existing fund contributions before increasing this amount.</p>').join(''):'<p>Start by listing your emergency reserve and near-term goals. Keep enough liquid cash for bills before raising automatic savings.</p>'}
+    function annualPaycheck401k(){return ret401kSettings.mode==='pct'?currentGrossIncome*(Number(ret401kSettings.pctVal)||0)/100:Number(ret401kSettings.dollarVal)||0}
+    function taxMoney(n){return '$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+    function estimatedPaycheckFederalRate(){
+      const salary=Math.max(0,currentGrossIncome),pretax=Math.max(0,annualPaycheck401k());
+      const filing=document.getElementById('taxFiling')?.value||'single';
+      const deduction=filing==='joint'?32200:16100;
+      const taxable=Math.max(0,salary-pretax-deduction);
+      const brackets=filing==='joint'?[[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]]:[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[640600,.35],[Infinity,.37]];
+      let last=0,tax=0;for(const [upper,rate] of brackets){tax+=Math.max(0,Math.min(taxable,upper)-last)*rate;last=upper;if(taxable<=upper)break}
+      return salary?Math.round(tax/salary*1000)/10:0;
+    }
+    function showPaycheckDeductionsInfo(){alert('Other paycheck deductions can include California state income tax withholding, Social Security, Medicare, health/dental/vision insurance premiums, commuter benefits, disability insurance, FSA contributions, and other payroll deductions.\n\nEnter a total per paycheck here, or use Add Line Item to itemize them. Do not count the same deduction twice. This breakdown is an estimate, not an official paystub.');}
+    function paycheckPeriodCount(){
+      const selected=document.getElementById('paycheckPeriods')?.value;
+      return selected==='other'?Math.max(1,Math.round(Number(taxGoalInputs.paycheckCustomPeriods)||26)):Number(selected)||26;
+    }
+    function changePaycheckPeriods(){
+      const selector=document.getElementById('paycheckPeriods');
+      if(selector.value==='other'){
+        const answer=prompt('How many pay periods are in your year?',String(taxGoalInputs.paycheckCustomPeriods||26));
+        if(answer===null){selector.value=taxGoalInputs.paycheckPeriods==='other'?'26':(taxGoalInputs.paycheckPeriods||'26');return}
+        const count=Number(answer);
+        if(!Number.isInteger(count)||count<1||count>366){alert('Enter a whole number of pay periods between 1 and 366.');selector.value='26';return}
+        taxGoalInputs.paycheckCustomPeriods=count;
+      }
+      taxGoalInputs.paycheckPeriods=selector.value;
+      renderPaycheckBreakdown();window.saveState();
+    }
+    function paycheckRowModal(){
+      let modal=document.getElementById('paycheckRowEditModal');
+      if(!modal){
+        modal=document.createElement('div');modal.id='paycheckRowEditModal';modal.className='fixed inset-0 z-[110] bg-black/40 flex items-center justify-center p-4 hidden';
+        modal.innerHTML=`<div class="bg-white rounded-3xl p-6 sm:p-7 w-full max-w-md space-y-4 shadow-xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="paycheckRowTitle">
+          <div class="flex justify-between items-center gap-3"><h3 id="paycheckRowTitle" class="text-lg font-extrabold text-[#2D2A26]">Add Row</h3><button type="button" id="paycheckRowClose" class="text-xl text-[#8C827A]" aria-label="Close">×</button></div>
+          <p class="text-xs text-[#8C827A]">Changes here are for your paycheck estimate only. They won't change Personal Overview.</p>
+          <label class="block text-xs font-semibold">Row name<input id="paycheckRowName" type="text" placeholder="e.g., California state tax" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]"></label>
+          <label class="block text-xs font-semibold">Type<select id="paycheckRowType" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]"><option value="income">Income or stipend (add to gross)</option><option value="contribution">Contribution</option><option value="deduction">Deduction (subtract from take-home)</option></select></label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><label class="block text-xs font-semibold">Amount <select id="paycheckRowUnit" class="ml-2 rounded-lg border border-[#EFE9E1] p-1"><option value="dollar">$</option><option value="percent">%</option></select><input id="paycheckRowAmount" type="number" min="0" step="0.01" placeholder="0.00" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]"></label>
+          <label class="block text-xs font-semibold">Amount frequency<select id="paycheckRowBasis" class="w-full mt-1 p-3 rounded-xl border border-[#EFE9E1]"><option value="monthly">Monthly</option><option value="paycheck">Per paycheck</option><option value="annual">Total annual</option></select></label></div>
+          <p id="paycheckRowHelp" class="text-xs text-[#8C827A]">The annual, monthly, and paycheck amounts are calculated automatically.</p>
+          <div class="flex justify-between items-center gap-2 pt-2"><button type="button" id="paycheckRowRemove" class="px-4 py-2 rounded-xl border border-[#EFE9E1] text-xs font-bold">Remove Row</button><div class="flex gap-2"><button type="button" id="paycheckRowCancel" class="px-4 py-2 rounded-xl border border-[#EFE9E1] text-xs font-bold">Cancel</button><button type="button" id="paycheckRowSave" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Save Row</button></div></div>
+        </div>`;
+        document.body.appendChild(modal);
+        modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.add('hidden')});
+        modal.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.add('hidden');if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();modal.querySelector('#paycheckRowSave').click()}});
+      }
+      return modal;
+    }
+    function addPaycheckLine(){editPaycheckTableRow('new',null)}
+    function editPaycheckLine(id){editPaycheckTableRow('custom',id)}
+    function removePaycheckLine(id){taxGoalInputs.paycheckLines=(taxGoalInputs.paycheckLines||[]).filter(x=>String(x.id)!==String(id));renderPaycheckBreakdown();window.saveState()}
+    function editPaycheck401kScenario(){
+      const gross=Math.max(0,currentGrossIncome);const actual=gross?annualPaycheck401k()/gross*100:0;
+      const current=taxGoalInputs.paycheck401kPct===undefined?actual:Number(taxGoalInputs.paycheck401kPct);
+      const answer=prompt('What-if employee 401(k) contribution rate (%). This does not change Personal Overview:',current.toFixed(2));
+      if(answer===null)return;const pct=Number(answer);if(!Number.isFinite(pct)||pct<0||pct>100){alert('Enter a percentage between 0 and 100.');return}
+      taxGoalInputs.paycheck401kPct=pct;renderPaycheckBreakdown();window.saveState();
+    }
+    function resetPaycheck401kScenario(){delete taxGoalInputs.paycheck401kPct;renderPaycheckBreakdown();window.saveState()}
+    function editPaycheckWifi(){
+      const current=taxGoalInputs.paycheckWifiMonthly===undefined?70.30:Number(taxGoalInputs.paycheckWifiMonthly);
+      const unit=prompt('WiFi stipend amount basis: monthly or annual?','monthly');if(unit===null)return;
+      const basis=unit.trim().toLowerCase();if(!['monthly','annual'].includes(basis)){alert('Enter monthly or annual.');return}
+      const amount=prompt('WiFi stipend ($ per '+basis+'):',String(basis==='annual'?+(current*12).toFixed(2):current));if(amount===null||!Number.isFinite(Number(amount))||Number(amount)<0)return;
+      taxGoalInputs.paycheckWifiMonthly=basis==='annual'?Number(amount)/12:Number(amount);renderPaycheckBreakdown();window.saveState();
+    }
+    function editPaycheckHsaScenario(){
+      const defaultAnnual=(Number(hsaPaycheck)||0)*(hsaPersonalMode==='annual'?1:12);
+      const current=taxGoalInputs.paycheckHsaAnnual===undefined?defaultAnnual:Number(taxGoalInputs.paycheckHsaAnnual);
+      const periods=paycheckPeriodCount();
+      let modal=document.getElementById('paycheckHsaEditModal');
+      if(!modal){
+        modal=document.createElement('div');modal.id='paycheckHsaEditModal';
+        modal.className='fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4';
+        modal.innerHTML='<div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4 shadow-xl" role="dialog" aria-modal="true" aria-label="Edit paycheck HSA scenario"><div class="flex items-center justify-between"><h3 class="font-extrabold text-[#2D2A26]">HSA Contribution — What-If</h3><button type="button" onclick="closePaycheckHsaScenario()" aria-label="Close">×</button></div><p class="text-xs text-[#8C827A]">This only changes Paycheck Breakdown, not your Personal Overview HSA.</p><label class="block text-xs font-semibold">Contribution frequency<select id="paycheckHsaEditBasis" class="w-full mt-1 border border-[#EFE9E1] rounded-xl p-2"><option value="monthly">Monthly</option><option value="annual">Annual</option><option value="paycheck">Per paycheck</option></select></label><label class="block text-xs font-semibold">Contribution amount ($)<input id="paycheckHsaEditAmount" type="number" min="0" step="0.01" class="w-full mt-1 border border-[#EFE9E1] rounded-xl p-2"></label><div class="flex justify-end gap-2"><button type="button" onclick="closePaycheckHsaScenario()" class="px-4 py-2 rounded-xl border border-[#EFE9E1] text-xs font-bold">Cancel</button><button type="button" onclick="savePaycheckHsaScenario()" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Save</button></div></div>';
+        modal.addEventListener('click',e=>{if(e.target===modal)closePaycheckHsaScenario()});
+        modal.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();savePaycheckHsaScenario()}else if(e.key==='Escape'){e.stopPropagation();closePaycheckHsaScenario()}});
+        document.body.appendChild(modal);
+      }
+      const basis=modal.querySelector('#paycheckHsaEditBasis');
+      const amount=modal.querySelector('#paycheckHsaEditAmount');
+      basis.value='monthly';amount.value=(current/12).toFixed(2);
+      basis.onchange=()=>{const factor=basis.value==='monthly'?12:basis.value==='annual'?1:periods;amount.value=(current/factor).toFixed(2)};
+      modal.classList.remove('hidden');amount.focus();amount.select();
+    }
+    function closePaycheckHsaScenario(){document.getElementById('paycheckHsaEditModal')?.classList.add('hidden')}
+    function savePaycheckHsaScenario(){
+      const modal=document.getElementById('paycheckHsaEditModal');if(!modal)return;
+      const basis=modal.querySelector('#paycheckHsaEditBasis').value;
+      const input=modal.querySelector('#paycheckHsaEditAmount');const value=Number(input.value);
+      if(input.value.trim()===''||!Number.isFinite(value)||value<0){alert('Enter a valid nonnegative amount.');return}
+      const periods=paycheckPeriodCount();
+      taxGoalInputs.paycheckHsaAnnual=value*(basis==='monthly'?12:basis==='annual'?1:periods);
+      renderPaycheckBreakdown();window.saveState();closePaycheckHsaScenario();
+    }
+    function editPaycheckTableRow(kind,id){
+      const lines=taxGoalInputs.paycheckLines||(taxGoalInputs.paycheckLines=[]);
+      const row=kind==='custom'?lines.find(x=>String(x.id)===String(id)):null;
+      if(kind==='custom'&&!row)return;
+      const overrides=taxGoalInputs.paycheckRowOverrides||(taxGoalInputs.paycheckRowOverrides={});
+      const hidden=taxGoalInputs.paycheckHiddenRows||(taxGoalInputs.paycheckHiddenRows=[]);
+      const tableRow=Array.from(document.querySelectorAll('#paycheckBreakdownTable tr[data-paycheck-row]')).find(x=>x.dataset.rowKind===kind&&(kind!=='custom'||x.dataset.rowId===String(id)));
+      const label=kind==='new'?'':kind==='custom'?row.name:(overrides[kind]?.name||tableRow?.querySelector('td')?.textContent||kind);
+      const periods=paycheckPeriodCount();
+      const annual=kind==='custom'?(row.unit==='percent'?paycheckGrossBase()*Number(row.pct||0)/100:Math.max(0,Number(row.annualAmount??((Number(row.amount)||0)*periods)))):Number(overrides[kind]?.amount??tableRow?.dataset.annual??0);
+      const basis=kind==='custom'?(row.basis||'paycheck'):kind==='wifi'?'monthly':'annual';
+      const amount=kind==='custom'?annual/(basis==='monthly'?12:basis==='annual'?1:periods):annual/(basis==='monthly'?12:basis==='paycheck'?periods:1);
+      const modal=paycheckRowModal(),q=id=>modal.querySelector('#'+id);
+      q('paycheckRowTitle').textContent=kind==='new'?'Add Paycheck Row':kind==='gross'?'Test Annual Gross Salary':'Edit Paycheck Row';
+      q('paycheckRowHelp').textContent=kind==='gross'?'Your current gross salary comes from Personal Overview. This is a test only and will not change it.':'Changes affect this paycheck estimate only.';
+      q('paycheckRowName').value=label;
+      q('paycheckRowType').value=kind==='custom'?row.type:(['gross','wifi','total'].includes(kind)?'income':kind==='401k'?'contribution':'deduction');
+      q('paycheckRowUnit').value=kind==='custom'?(row.unit||'dollar'):'dollar';
+      q('paycheckRowType').disabled=kind!=='custom'&&kind!=='new';
+      q('paycheckRowAmount').value=kind==='new'?'':q('paycheckRowUnit').value==='percent'?Number(row?.pct||0):Number(amount.toFixed(2));
+      q('paycheckRowBasis').value=basis;
+      q('paycheckRowRemove').classList.toggle('hidden',kind==='new');
+      if(kind==='gross'){q('paycheckRowBasis').value='annual';q('paycheckRowUnit').value='dollar';q('paycheckRowAmount').value=annual;q('paycheckRowType').value='income'}
+      if(kind==='tax'){q('paycheckRowUnit').value='percent';q('paycheckRowAmount').value=document.getElementById('paycheckTaxRate').value;q('paycheckRowBasis').value='annual'}
+      if(kind==='other'){q('paycheckRowUnit').value='dollar';q('paycheckRowAmount').value=annual/periods;q('paycheckRowBasis').value='paycheck'}
+      if(kind==='401k'){q('paycheckRowUnit').value='percent';q('paycheckRowAmount').value=paycheckGrossBase()?Number((annual/paycheckGrossBase()*100).toFixed(2)):0}
+      if(kind==='new')q('paycheckRowHelp').textContent='Choose an amount and frequency. The other columns calculate automatically.';
+      const close=()=>modal.classList.add('hidden');q('paycheckRowClose').onclick=close;q('paycheckRowCancel').onclick=close;
+      q('paycheckRowRemove').onclick=()=>{
+        if(kind==='custom')taxGoalInputs.paycheckLines=lines.filter(x=>String(x.id)!==String(id));
+        else if(!hidden.includes(kind))hidden.push(kind);
+        close();renderPaycheckBreakdown();window.saveState();
+      };
+      q('paycheckRowSave').onclick=()=>{
+        const name=q('paycheckRowName').value.trim(),amountField=q('paycheckRowAmount'),v=Number(amountField.value),frequency=q('paycheckRowBasis').value,type=q('paycheckRowType').value;
+        if(!name||amountField.value.trim()===''||!Number.isFinite(v)||v<0){alert('Enter a row name and a valid nonnegative amount.');return}
+        const unit=q('paycheckRowUnit').value;const yearly=kind==='tax'?paycheckTaxableBase()*v/100:unit==='percent'?v/100*paycheckGrossBase():v*(frequency==='monthly'?12:frequency==='paycheck'?paycheckPeriodCount():1);
+        if(unit==='percent'&&v>100){alert('Enter a percentage between 0 and 100.');return}
+        if(kind==='new')lines.push({id:String(Date.now())+'_'+Math.random().toString(36).slice(2),name,type,amount:yearly/paycheckPeriodCount(),annualAmount:yearly,basis:frequency,unit,pct:unit==='percent'?v:undefined});
+        else if(kind==='custom'){Object.assign(row,{name,type,amount:yearly/paycheckPeriodCount(),annualAmount:yearly,basis:frequency,unit,pct:unit==='percent'?v:undefined})}
+        else {if(kind==='tax'){document.getElementById('paycheckTaxRate').value=v;taxGoalInputs.paycheckTaxRate=v;delete overrides.tax;}else if(kind==='other'){document.getElementById('paycheckOtherDeductions').value=yearly/paycheckPeriodCount();taxGoalInputs.paycheckOtherDeductions=yearly/paycheckPeriodCount();delete overrides.other;}else if(kind==='401k'){taxGoalInputs.paycheck401kPct=unit==='percent'?v:paycheckGrossBase()?yearly/paycheckGrossBase()*100:0;delete overrides['401k'];}else overrides[kind]={name,amount:yearly};}
+        close();renderPaycheckBreakdown();window.saveState();
+      };
+      modal.classList.remove('hidden');q('paycheckRowName').focus();
+    }
+    document.addEventListener('click',function(e){
+      if(e.target.closest('[data-open-spending]')){e.preventDefault();switchTab('spending');return}
+      const tr=e.target.closest('#paycheckBreakdownTable tr[data-paycheck-row]');
+      if(tr)editPaycheckTableRow(tr.dataset.rowKind,tr.dataset.rowId||null);
+    });
+    document.addEventListener('keydown',function(e){
+      const tr=e.target.closest('#paycheckBreakdownTable tr[data-paycheck-row]');
+      if(tr&&(e.key==='Enter'||e.key===' ')){e.preventDefault();editPaycheckTableRow(tr.dataset.rowKind,tr.dataset.rowId||null)}
+    });
+    function renderPaycheckBreakdown(){
+      const out=document.getElementById('paycheckBreakdownTable');if(!out)return;
+      const periods=paycheckPeriodCount();
+      const rate=Math.max(0,Math.min(100,Number(document.getElementById('paycheckTaxRate')?.value)||0))/100;
+      const other=Math.max(0,Number(document.getElementById('paycheckOtherDeductions')?.value)||0);
+      const overrides=taxGoalInputs.paycheckRowOverrides||{};
+      const hidden=taxGoalInputs.paycheckHiddenRows||[];
+      const value=(key,fallback)=>Math.max(0,Number(overrides[key]?.amount??fallback)||0);
+      const base=value('gross',currentGrossIncome),wifi=value('wifi',Math.max(0,Number(taxGoalInputs.paycheckWifiMonthly===undefined?70.30:taxGoalInputs.paycheckWifiMonthly))*12);
+      const employee=value('401k',taxGoalInputs.paycheck401kPct===undefined?annualPaycheck401k():base*Number(taxGoalInputs.paycheck401kPct)/100);
+      const lines=(Array.isArray(taxGoalInputs.paycheckLines)?taxGoalInputs.paycheckLines:[]).filter(x=>String(x.name||'').trim().toLowerCase()!=='hsa');
+      const lineAnnual=x=>x.unit==='percent'?base*Number(x.pct||0)/100:Math.max(0,Number(x.annualAmount??((Number(x.amount)||0)*periods)));
+      const additionalIncome=lines.filter(x=>x.type==='income').reduce((sum,x)=>sum+lineAnnual(x),0);
+      const additionalContributions=lines.filter(x=>x.type==='contribution').reduce((sum,x)=>sum+lineAnnual(x),0);
+      const additionalDeductions=lines.filter(x=>x.type==='deduction').reduce((sum,x)=>sum+lineAnnual(x),0);
+      const gross=value('total',base+wifi+additionalIncome),taxable=value('taxable',Math.max(0,base+additionalIncome-employee-additionalContributions));
+      const tax=taxable*rate,otherAnnual=other*periods;
+      const net=value('net',gross-employee-additionalContributions-tax-otherAnnual-additionalDeductions);
+      const rows=[['Gross Salary',base,'gross'],['WiFi',wifi,'wifi'],...lines.filter(x=>x.type==='income').map(x=>[x.name,lineAnnual(x),'custom',x.id]),['Total Gross Income',gross,'total'],['401k Contribution',employee,'401k'],...lines.filter(x=>x.type==='contribution').map(x=>[x.name,lineAnnual(x),'custom',x.id]),['Adjusted Gross Income (Taxable Income)',taxable,'taxable'],['Estimated federal income tax',tax,'tax'],['Other deductions',otherAnnual,'other'],...lines.filter(x=>x.type==='deduction').map(x=>[x.name,lineAnnual(x),'custom',x.id]),['Net Pay',net,'net']];
+      const visible=rows.filter(r=>r[2]==='custom'||!hidden.includes(r[2]));
+      const html=visible.map(r=>{
+        const key=r[2],id=r[3],annual=r[1],name=key==='custom'?r[0]:(overrides[key]?.name||r[0]);
+        const rowKey=key+(id?'_'+id:'');
+        return '<tr data-paycheck-row="'+safePlanText(rowKey)+'" data-row-kind="'+safePlanText(key)+'" data-row-id="'+safePlanText(id===undefined?'':String(id))+'" data-annual="'+annual+'" tabindex="0" class="cursor-pointer border-b border-[#FAF5EF] '+(['gross','total','taxable','net'].includes(key)?'font-extrabold bg-[#FAF8F5]':'')+'"><td class="p-2">'+safePlanText(name)+'</td><td class="p-2 text-right mono-num">'+taxMoney(annual)+'</td><td class="p-2 text-right mono-num">'+taxMoney(annual/12)+'</td><td class="p-2 text-right mono-num">'+taxMoney(annual/periods)+'</td></tr>';
+      }).join('');
+      out.innerHTML='<table class="w-full min-w-[400px] text-xs"><thead><tr class="border-b border-[#EFE9E1] text-[#8C827A]"><th class="text-left p-2">Paycheck breakdown</th><th class="text-right p-2">Annual</th><th class="text-right p-2">Monthly</th><th class="text-right p-2 cursor-pointer underline decoration-dotted" tabindex="0" onclick="openPaycheckPeriodsModal()" >Per Paycheck</th></tr></thead><tbody>'+html+'<tr><td colspan="4" class="p-2"><button type="button" onclick="addPaycheckLine()" class="text-xs font-bold underline decoration-dotted">+ Add Row</button></td></tr></tbody></table>';
+    }
+    function paycheckGrossBase(){return Math.max(0,Number(taxGoalInputs.paycheckRowOverrides?.gross?.amount??currentGrossIncome)||0)}
+    function paycheckTaxableBase(){return Math.max(0,paycheckGrossBase()-Number(taxGoalInputs.paycheckRowOverrides?.['401k']?.amount??annualPaycheck401k()))}
+    function paycheckDefaultState(){return {paycheckRowOverrides:{},paycheckHiddenRows:[],paycheckLines:[],paycheckWifiMonthly:70.30,paycheckTaxRate:24,paycheckOtherDeductions:0,paycheckPeriods:'26',paycheckCustomPeriods:26}}
+    function paycheckSnapshot(){const keys=Object.keys(paycheckDefaultState()).concat(['paycheck401kPct']);const snap={};keys.forEach(k=>{if(taxGoalInputs[k]!==undefined)snap[k]=JSON.parse(JSON.stringify(taxGoalInputs[k]))});snap.paycheckTaxRate=document.getElementById('paycheckTaxRate').value;snap.paycheckOtherDeductions=document.getElementById('paycheckOtherDeductions').value;snap.paycheckPeriods=document.getElementById('paycheckPeriods').value;return snap}
+    function applyPaycheckSnapshot(snap){const keys=Object.keys(paycheckDefaultState()).concat(['paycheck401kPct']);keys.forEach(k=>delete taxGoalInputs[k]);Object.assign(taxGoalInputs,JSON.parse(JSON.stringify(snap)));['paycheckTaxRate','paycheckOtherDeductions','paycheckPeriods'].forEach(k=>document.getElementById(k).value=taxGoalInputs[k]??(k==='paycheckTaxRate'?24:k==='paycheckPeriods'?'26':0));renderPaycheckBreakdown();window.saveState()}
+    function resetPaycheckBaseline(){applyPaycheckSnapshot(taxGoalInputs.paycheckBaseline||paycheckDefaultState())}
+    function updatePaycheckBaseline(){taxGoalInputs.paycheckBaseline=paycheckSnapshot();window.saveState();}
+    function openPaycheckPeriodsModal(){let m=document.getElementById('paycheckPeriodsModal');if(!m){m=document.createElement('div');m.id='paycheckPeriodsModal';m.className='fixed inset-0 z-[120] bg-black/40 flex items-center justify-center p-4';m.innerHTML='<div class="bg-white rounded-3xl p-6 sm:p-7 w-full max-w-sm shadow-xl space-y-4" role="dialog" aria-modal="true"><h3 class="text-lg font-extrabold">Pay periods per year</h3><p class="text-xs text-[#8C827A]">Choose the number of paychecks to use in this estimate.</p><label class="block text-xs font-semibold">Pay periods<input id="periodCountInput" type="number" min="1" max="366" step="1" class="mt-2 w-full p-3 rounded-xl border border-[#EFE9E1]"></label><div class="flex justify-end gap-2"><button type="button" onclick="closePaycheckPeriodsModal()" class="px-4 py-2 rounded-xl border text-xs font-bold">Cancel</button><button type="button" onclick="savePaycheckPeriodCount()" class="px-4 py-2 rounded-xl bg-[#2D2A26] text-white text-xs font-bold">Save</button></div></div>';document.body.appendChild(m)}m.querySelector('#periodCountInput').value=paycheckPeriodCount();m.classList.remove('hidden')}
+    function closePaycheckPeriodsModal(){document.getElementById('paycheckPeriodsModal')?.remove()}
+    function savePaycheckPeriodCount(){const v=Number(document.getElementById('periodCountInput').value);if(!Number.isInteger(v)||v<1||v>366){alert('Enter a whole number between 1 and 366.');return}taxGoalInputs.paycheckCustomPeriods=v;taxGoalInputs.paycheckPeriods='other';document.getElementById('paycheckPeriods').value='other';document.getElementById('paycheckPeriodsModal').remove();renderPaycheckBreakdown();window.saveState()}
+    function toggleTaxScenario(){const enabled=document.getElementById('taxScenario')?.checked;['taxSalary','taxPretax'].forEach(id=>{const el=document.getElementById(id);if(el){el.readOnly=!enabled;el.classList.toggle('bg-[#FAF8F5]',!enabled)}});if(!enabled)resetTaxScenario();else estimateGoalTax()}
+    function resetTaxScenario(){document.getElementById('taxScenario').checked=false;document.getElementById('taxSalary').value=currentGrossIncome;document.getElementById('taxPretax').value=annualPaycheck401k();toggleTaxScenarioReadOnly();estimateGoalTax()}
+    function toggleTaxScenarioReadOnly(){const enabled=document.getElementById('taxScenario').checked;['taxSalary','taxPretax'].forEach(id=>document.getElementById(id).readOnly=!enabled)}
+    function loadGoalTaxInputs(){
+      ['taxFiling','taxDeduction','taxWithheld','taxOther'].forEach(id=>{const el=document.getElementById(id);if(el&&taxGoalInputs[id]!==undefined)el.value=taxGoalInputs[id]});
+      document.getElementById('taxSalary').value=currentGrossIncome;document.getElementById('taxPretax').value=annualPaycheck401k();
+      const deduction=document.getElementById('taxDeduction');if(deduction&&!deduction.value)deduction.value=document.getElementById('taxFiling').value==='joint'?'32200':'16100';
+      if(taxGoalInputs.taxScenario){document.getElementById('taxScenario').checked=true;['taxSalary','taxPretax'].forEach(id=>{if(taxGoalInputs[id]!==undefined)document.getElementById(id).value=taxGoalInputs[id]})}
+      toggleTaxScenarioReadOnly();['paycheckPeriods','paycheckOtherDeductions'].forEach(id=>{if(taxGoalInputs[id]!==undefined)document.getElementById(id).value=taxGoalInputs[id]});if(!['26','27','other'].includes(document.getElementById('paycheckPeriods').value))document.getElementById('paycheckPeriods').value='26';const rateField=document.getElementById('paycheckTaxRate');rateField.value=taxGoalInputs.paycheckTaxRate!==undefined?taxGoalInputs.paycheckTaxRate:24;estimateGoalTax();renderPaycheckBreakdown();
+    }
+    function saveGoalTaxInputs(){['taxFiling','taxSalary','taxPretax','taxDeduction','taxWithheld','taxOther'].forEach(id=>taxGoalInputs[id]=document.getElementById(id).value);taxGoalInputs.taxScenario=document.getElementById('taxScenario').checked;window.saveState();estimateGoalTax()}
+    function estimateGoalTax(){
+      const get=id=>Number(document.getElementById(id)?.value)||0,filing=document.getElementById('taxFiling')?.value||'single';
+      if(!document.getElementById('taxScenario')?.checked){document.getElementById('taxSalary').value=currentGrossIncome;document.getElementById('taxPretax').value=annualPaycheck401k()}
+      const taxable=Math.max(0,get('taxSalary')+get('taxOther')-get('taxPretax')-get('taxDeduction'));
+      const brackets=filing==='joint'?[[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]]:[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[640600,.35],[Infinity,.37]];
+      let last=0,tax=0;for(const [upper,rate] of brackets){const amount=Math.max(0,Math.min(taxable,upper)-last);tax+=amount*rate;last=upper;if(taxable<=upper)break}
+      const out=document.getElementById('taxEstimateResult'),withheldInput=document.getElementById('taxWithheld'),hasWithholding=withheldInput.value.trim()!=='';
+      if(!hasWithholding){out.textContent='Estimated federal income tax: '+taxMoney(tax)+' • Enter your annual federal withholding to estimate a refund or amount owed.'}else{const delta=tax-get('taxWithheld');out.textContent='Illustrative federal '+(delta>=0?'amount owed: ':'refund: ')+taxMoney(Math.abs(delta))}
+      const note=document.getElementById('taxGoalAdvice');if(note)note.textContent='Taxable income after 401(k) and deduction: '+taxMoney(taxable)+'. '+(!hasWithholding?'Your withholding is on your paystub or W-2. Do not confuse it with the total of all payroll taxes.':tax>get('taxWithheld')?'Consider setting aside '+taxMoney((tax-get('taxWithheld'))/Math.max(1,12-new Date().getMonth()))+' per remaining month while keeping a checking buffer.':'If you receive a refund, consider your highest-priority savings goal after keeping a checking buffer.')+' Estimate excludes credits, state tax, Social Security, Medicare and special rules.';
+    }
+    document.addEventListener('change',function(e){if(['paycheckPeriods','paycheckTaxRate','paycheckOtherDeductions'].includes(e.target.id)){taxGoalInputs[e.target.id]=e.target.value;window.saveState()}});
+    let quickLinksData = [
+      {id:'ql-credit',section:'Financial Accounts',name:'Credit',url:'https://secure.chase.com/web/auth/dashboard#/dashboard/overview'},
+      {id:'ql-checking',section:'Financial Accounts',name:'Checking/Savings',url:'https://online.asbhawaii.com/americansavingsbankfsbonline/uux.aspx#/landingPage'},
+      {id:'ql-hysa',section:'Financial Accounts',name:'HYSA',url:'https://www.marcus.com/us/en/dashboard'},
+      {id:'ql-brokerage',section:'Financial Accounts',name:'Brokerage',url:'https://client.schwab.com/app/accounts/summary/'},
+      {id:'ql-401k',section:'Financial Accounts',name:'401k',url:'https://ownyourfuture.vanguard.com/main/manage#investmentPortfolio'},
+      {id:'ql-hsa',section:'Financial Accounts',name:'HSA',url:'https://member.my.healthequity.com/account/hsa/28703191-010'},
+      {id:'ql-housing',section:'Expenses',name:'Housing Portal',url:'https://station16.loftliving.com/portal/resident-dashboard'}
+    ];
+    function validQuickLinkUrl(value){try{const u=new URL(value);return (u.protocol==='https:'||u.protocol==='http:')?u.href:null}catch(e){return null}}
+    function addQuickLink(){
+      const name=prompt('Quick link name:');if(name===null||!name.trim())return;
+      const url=prompt('Website URL (https://...):');if(url===null)return;
+      const safeUrl=validQuickLinkUrl(url.trim());if(!safeUrl){alert('Enter a valid http or https website URL.');return}
+      const section=prompt('Section (Financial Accounts or Expenses):','Financial Accounts');if(section===null)return;
+      quickLinksData.push({id:'ql-'+Date.now(),section:section.trim()||'Financial Accounts',name:name.trim(),url:safeUrl});renderQuickLinks();window.saveState();
+    }
+    function editQuickLink(id){
+      const link=quickLinksData.find(x=>x.id===id);if(!link)return;
+      const name=prompt('Quick link name:',link.name);if(name===null||!name.trim())return;
+      const url=prompt('Website URL:',link.url);if(url===null)return;
+      const safeUrl=validQuickLinkUrl(url.trim());if(!safeUrl){alert('Enter a valid http or https website URL.');return}
+      const section=prompt('Section:',link.section);if(section===null)return;
+      Object.assign(link,{name:name.trim(),url:safeUrl,section:section.trim()||'Financial Accounts'});renderQuickLinks();window.saveState();
+    }
+    function removeQuickLink(id){if(!confirm('Remove this quick link?'))return;quickLinksData=quickLinksData.filter(x=>x.id!==id);renderQuickLinks();window.saveState()}
+    function renderQuickLinks(){
+      const el=document.getElementById('quickLinksList');if(!el)return;
+      const sections=[...new Set(quickLinksData.map(x=>x.section))];
+      el.innerHTML=sections.map(section=>'<div class="space-y-2"><h4 class="text-xs font-extrabold uppercase tracking-wider text-[#8C827A]">'+safePlanText(section)+'</h4>'+quickLinksData.filter(x=>x.section===section).map(link=>{
+        const url=validQuickLinkUrl(link.url);if(!url)return '';
+        return '<div class="flex items-center justify-between gap-3 border border-[#EFE9E1] rounded-xl px-3 py-2"><a class="text-sm font-semibold text-[#2D2A26] hover:underline min-w-0 truncate" href="'+safePlanText(url)+'" target="_blank" rel="noopener noreferrer">'+safePlanText(link.name)+' ↗</a><div class="flex gap-3 shrink-0"><button class="text-xs text-[#8C827A] hover:text-[#2D2A26]" data-quick-link-edit="'+safePlanText(link.id)+'">Edit</button><button class="text-xs text-[#8C827A] hover:text-[#2D2A26]" data-quick-link-remove="'+safePlanText(link.id)+'">Remove</button></div></div>';
+      }).join('')+'</div>').join('');
+      el.querySelectorAll('[data-quick-link-edit]').forEach(b=>b.addEventListener('click',()=>editQuickLink(b.dataset.quickLinkEdit)));
+      el.querySelectorAll('[data-quick-link-remove]').forEach(b=>b.addEventListener('click',()=>removeQuickLink(b.dataset.quickLinkRemove)));
+    }
+    function addMiscModule(){const type=prompt('Module type: enter "notes" or "simulator"','notes');if(!['notes','simulator'].includes((type||'').toLowerCase()))return;const name=prompt('Module name:',type==='notes'?'My Notes':'What-If Financial Simulator');if(!name?.trim())return;miscModuleData.push({id:'m'+Date.now(),type,name:name.trim(),notes:''});renderMiscModules();window.saveState()}
+    function removeMiscModule(id){if(!confirm('Remove this module?'))return;miscModuleData=miscModuleData.filter(x=>String(x.id)!==String(id));renderMiscModules();window.saveState()}
+    function updateMiscNotes(id,value){const m=miscModuleData.find(x=>String(x.id)===String(id));if(m){m.notes=value;window.saveState()}}
+    function renderMiscModules(){const el=document.getElementById('miscModules');if(!el)return;el.innerHTML=miscModuleData.map((m,i)=>'<div class="bg-white border border-[#EFE9E1] rounded-3xl p-5 space-y-3"><div class="flex justify-between items-center"><h3 class="font-bold">'+safePlanText(m.name)+'</h3><button class="text-xs underline" onclick="removeMiscModule(\''+safePlanText(m.id)+'\')">Remove</button></div>'+(m.type==='notes'?'<textarea class="w-full border rounded-xl p-3 text-sm" rows="4" placeholder="Your notes..." oninput="updateMiscNotes(\''+safePlanText(m.id)+'\',this.value)">'+safePlanText(m.notes)+'</textarea>':'<p class="text-xs text-[#8C827A]">Explore a hypothetical monthly savings or investment change without altering saved balances.</p><label class="text-xs">Additional monthly contribution ($)<input type="number" class="w-full border rounded-xl p-2" id="simExtra'+i+'" value="0" oninput="runMiscSimulator('+i+')"></label><label class="text-xs">Years<input type="number" class="w-full border rounded-xl p-2" id="simYears'+i+'" value="10" min="1" oninput="runMiscSimulator('+i+')"></label><label class="text-xs">Assumed annual return (%)<input type="number" class="w-full border rounded-xl p-2" id="simRate'+i+'" value="5" oninput="runMiscSimulator('+i+')"></label><div class="font-bold text-sm" id="simResult'+i+'"></div>')+'</div>').join('');miscModuleData.forEach((m,i)=>{if(m.type==='simulator')runMiscSimulator(i)})}
+    function runMiscSimulator(i){const extra=Number(document.getElementById('simExtra'+i)?.value)||0,years=Math.max(0,Number(document.getElementById('simYears'+i)?.value)||0),rate=(Number(document.getElementById('simRate'+i)?.value)||0)/1200;const months=Math.min(1200,Math.round(years*12));let balance=0;for(let j=0;j<months;j++)balance=balance*(1+rate)+extra;const out=document.getElementById('simResult'+i);if(out)out.textContent='Projected value of additional contributions: '+planMoney(balance)+' (contributed '+planMoney(extra*months)+') — hypothetical, not guaranteed'}
+    document.addEventListener('click',e=>{const modal=e.target;if(modal instanceof HTMLElement&&((modal.id?.endsWith('Modal')&&modal.classList.contains('fixed'))||modal.id==='customContributionDialog')){modal.classList.add('hidden')}});
+    // Enter submits the modal's real Save action; never dismiss an editor without saving.
+    // Use capture so nested modal-specific Enter handlers cannot cause a second submission.
+    document.addEventListener('keydown',e=>{
+      if(e.key!=='Enter'||e.defaultPrevented||e.isComposing||e.target instanceof HTMLTextAreaElement)return;
+      const modal=e.target.closest?.('.fixed[id$="Modal"],#customContributionDialog');
+      if(!modal||modal.classList.contains('hidden'))return;
+      if(e.target instanceof HTMLButtonElement)return; // Native button activation already works.
+      const buttons=[...modal.querySelectorAll('button')].filter(b=>!b.disabled&&b.getClientRects().length);
+      const save=buttons.find(b=>/^(save(?: .*)?|add expense|add income|log income|create|apply(?: .*)?|confirm|update(?: .*)?|add goal|add row|done|transfer|connect & sync)$/i.test(b.textContent.trim()))
+        ||buttons.find(b=>/^(save|submit|execute)/i.test(b.getAttribute('onclick')||''))
+        ||modal.querySelector('#customSave,#paycheckRowSave');
+      if(save){e.preventDefault();e.stopImmediatePropagation();save.click()}
+    },true);
+
+    // Completion buttons close their own editor after the existing action runs.
+    // Keep the editor open if a required value is missing or a field is invalid.
+    document.addEventListener('click', event => {
+      const button = event.target.closest?.('button');
+      if (!button || button.disabled || !/^(save(?: .*)?|add expense|add income|log income|create|apply(?: .*)?|confirm|update(?: .*)?|add goal|add row|done|transfer|connect & sync)$/i.test(button.textContent.trim())) return;
+      const modal = button.closest('.fixed[id$="Modal"],#customContributionDialog');
+      if (!modal || modal.classList.contains('hidden')) return;
+      const modalId = modal.id;
+      if (modalId === 'addExpenseModal' && !(Number(document.getElementById('expAmountInput')?.value) > 0)) return;
+      if (modalId === 'addIncomeModal' && !(Number(document.getElementById('incAmountInput')?.value) > 0)) return;
+      if (modalId === 'financialGoalEditorModal') {
+        const name = modal.querySelector('#goalEditName')?.value.trim();
+        const target = Number(modal.querySelector('#goalEditTarget')?.value);
+        const saved = Number(modal.querySelector('#goalEditSaved')?.value);
+        const months = Number(modal.querySelector('#goalEditMonths')?.value);
+        if (!name || !Number.isFinite(target) || target < 0 || !Number.isFinite(saved) || saved < 0 || !(months > 0)) return;
+      }
+      if ([...modal.querySelectorAll('input,select,textarea')].some(field => !field.checkValidity())) return;
+      // Inline onclick handlers have already run when this bubbling listener fires.
+      // Defer closing so synchronous save logic and its own close behavior finish first.
+      queueMicrotask(() => {
+        const current = document.getElementById(modalId);
+        if (current && !current.classList.contains('hidden')) current.classList.add('hidden');
+      });
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
+      renderQuickLinks();
       try {
         const cached = localStorage.getItem('tm_local_backup');
         if (cached) applyLoadedState(JSON.parse(cached));
@@ -4109,6 +4512,7 @@
       renderIncomeTable();
       renderHistoryTable();
       recalcAll();
+      loadGoalTaxInputs();
       loadFromGoogleSheet();
     });
   </script>
